@@ -35,12 +35,14 @@ jobs:
       run: npx playwright install --with-deps chromium
     
     - name: Run AI-Native Workflow Tests
-      run: npx cucumber-js features/ai_native_workflow.feature --format json:report.json
+      run: |
+        mkdir -p reports
+        npx cucumber-js features/ai_native_workflow.feature --format json:reports/cucumber-report.json
       continue-on-error: true
     
     - name: Generate HTML Report
       if: always()
-      run: npm run test:report
+      run: node report.js
       continue-on-error: true
     
     - name: Upload Test Results
@@ -49,8 +51,8 @@ jobs:
       with:
         name: test-results
         path: |
-          cucumber-report.html
-          report.json
+          reports/cucumber-report.html
+          reports/cucumber-report.json
           summary-report.json
         retention-days: 30
     
