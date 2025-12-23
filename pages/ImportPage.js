@@ -1,4 +1,29 @@
 const { expect } = require('@playwright/test');
+
+class ImportStatus {
+    constructor() {
+        this.results = [];
+        this.totalReviews = 0;
+    }
+
+    addResult(platform, status, reviews = 0, error = null) {
+        this.results.push({ platform, status, reviews, error });
+        this.totalReviews += reviews;
+    }
+
+    getSummary() {
+        const successful = this.results.filter(r => r.status === 'success').length;
+        const failed = this.results.filter(r => r.status === 'failed').length;
+        return {
+            total: this.results.length,
+            successful,
+            failed,
+            totalReviews: this.totalReviews,
+            details: this.results
+        };
+    }
+}
+
 class ImportPage {
     constructor(page) {
         this.page = page;
@@ -229,6 +254,7 @@ class ImportPage {
                 successMsg: '#goodreads-information-section p.platform-other-info-box'
             }
         };
+        this.status = new ImportStatus();
     }
 
     async navigateToImportReviews() {
@@ -462,6 +488,82 @@ class ImportPage {
         }
     }
 
+    async detectAndImportFlow(platform, link) {
+        console.log(`Starting AI-driven import flow for ${platform}`);
+        let attempts = 0;
+        const maxRetries = 2;
 
+        while (attempts <= maxRetries) {
+            try {
+                // 1. Select Platform
+                await this.selectPlatform(platform);
+
+                // 2. Enter URL
+                const config = this.platformConfig[platform] || {};
+                const inputSelector = config.input || this.urlInput;
+                const input = this.page.locator(inputSelector).first();
+                await input.waitFor({ state: 'visible', timeout: 10000 });
+                await input.fill(link);
+
+                // 3. Dynamic Decision: Which button to click?
+                const getReviewsBtn = this.page.locator(config.importBtn || 'button:has-text("Get Reviews")').first();
+                const importReviewsBtn = this.page.locator('button:has-text("Import Reviews")').first();
+                const importPostBtn = this.page.locator('button:has-text("Import Post")').first();
+
+                if (await getReviewsBtn.isVisible()) {
+                    console.log('Detected "Get Reviews" flow');
+                    await getReviewsBtn.click();
+
+                    // Wait for reviews to load and select all
+                    const selectAll = this.page.locator(config.selectAllCheckbox || 'input[type="checkbox"]').first();
+                    await selectAll.waitFor({ state: 'visible', timeout: 30000 });
+                    await selectAll.click({ force: true });
+
+                    const finalImport = this.page.locator(config.finalImportBtn || 'button:has-text("Import Reviews")').first();
+                    await finalImport.waitFor({ state: 'visible', timeout: 10000 });
+                    await finalImport.click();
+                } else if (await importReviewsBtn.isVisible()) {
+                    console.log('Detected "Import Reviews" flow');
+                    await importReviewsBtn.click();
+                } else if (await importPostBtn.isVisible()) {
+                    console.log('Detected "Import Post" flow');
+                    await importPostBtn.click();
+                } else {
+                    // Fallback to whatever is visible or configured
+                    const fallback = this.page.locator(config.importBtn || this.importButton).first();
+                    await fallback.click();
+                }
+
+                // 4. Verify Success
+                const successMsg = config.successMsg || 'text=successfully imported';
+                const success = this.page.locator(successMsg).first();
+                await success.waitFor({ state: 'visible', timeout: 60000 });
+
+                // Try to extract count for reporting
+                const text = await success.textContent();
+                const countMatch = text.match(/imported (\d+)/i);
+                const count = countMatch ? parseInt(countMatch[1]) : 1;
+
+                this.status.addResult(platform, 'success', count);
+                console.log(`Successfully imported ${platform}`);
+                return true;
+
+            } catch (error) {
+                attempts++;
+                console.error(`Attempt ${attempts} failed for ${platform}: ${error.message}`);
+                if (attempts > maxRetries) {
+                    this.status.addResult(platform, 'failed', 0, error.message);
+                    return false;
+                }
+                // Small wait before retry
+                await this.page.waitForTimeout(2000);
+                await this.page.reload();
+            }
+        }
+    }
+
+    getImportSummary() {
+        return this.status.getSummary();
+    }
 }
 module.exports = { ImportPage };

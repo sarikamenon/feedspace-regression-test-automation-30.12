@@ -5,6 +5,8 @@ on:
     branches: [ main, master, develop ]
   pull_request:
     branches: [ main, master, develop ]
+  schedule:
+    - cron: '0 9 * * *' # Run at 9:00 AM UTC every day
   workflow_dispatch:  # Allows manual trigger from GitHub UI
 
 jobs:
@@ -34,9 +36,9 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps chromium
     
-    - name: Run Cucumber Tests
-      run: npm test
-      continue-on-error: true  # Continue to report generation even if tests fail
+    - name: Run AI-Native Workflow Tests
+      run: npx cucumber-js features/ai_native_workflow.feature --format json:report.json
+      continue-on-error: true
     
     - name: Generate HTML Report
       if: always()
@@ -51,6 +53,7 @@ jobs:
         path: |
           cucumber-report.html
           report.json
+          summary-report.json
         retention-days: 30
     
     - name: Upload Screenshots (if any)
@@ -64,6 +67,4 @@ jobs:
     
     - name: Publish Test Report Summary
       if: always()
-      run: |
-        echo "## Test Results" >> $GITHUB_STEP_SUMMARY
-        echo "Test execution completed. Check artifacts for detailed reports." >> $GITHUB_STEP_SUMMARY
+      run: node generate-summary.js

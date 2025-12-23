@@ -105,6 +105,34 @@ class PagesPage {
         await btn.click();
         console.log('Clicked Save & Share button.');
     }
+
+    async clickMagicLinkAndClose() {
+        console.log('Handling Magic Link flow...');
+        const magicLink = this.page.locator('a[href*="feedspace.io/p/"]').first();
+
+        if (await magicLink.isVisible()) {
+            console.log('Magic link found, clicking...');
+            const [newPage] = await Promise.all([
+                this.page.context().waitForEvent('page'),
+                magicLink.click()
+            ]);
+
+            await newPage.waitForLoadState('domcontentloaded');
+            console.log(`Opened magic link share page: ${newPage.url()}`);
+
+            // Switch back to original page and close the new tab
+            await this.page.bringToFront();
+            await newPage.close();
+            console.log('Switched back and closed magic link tab.');
+        }
+
+        // Click the final close button on the modal if it exists
+        const closeBtn = this.page.locator('button.close-modal, button#yt-import-modal-close, button:has-text("Close")').first();
+        if (await closeBtn.isVisible()) {
+            await closeBtn.click();
+            console.log('Closed the shared modal.');
+        }
+    }
 }
 
 module.exports = { PagesPage };
