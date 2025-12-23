@@ -16,9 +16,7 @@ jobs:
     
     strategy:
       fail-fast: false
-      matrix:
-        # You can run tests in parallel by splitting scenarios
-        shard: [1, 1]  # Change to [1, 2] or [1, 3] for parallel execution
+      # Removed matrix to avoid artifact name conflicts
     
     steps:
     - name: Checkout code
@@ -49,7 +47,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-${{ matrix.shard }}
+        name: test-results
         path: |
           cucumber-report.html
           report.json
@@ -60,7 +58,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: screenshots-${{ matrix.shard }}
+        name: screenshots
         path: screenshots/
         retention-days: 30
         if-no-files-found: ignore
