@@ -30,11 +30,20 @@ When('I enter the retrieved OTP', async function () {
 });
 
 Then('I should be logged in successfully', async function () {
-    // Wait for the URL to change away from /signin
-    await this.page.waitForTimeout(3000);
+    console.log('Waiting for login redirect...');
+    // Wait for URL to NOT contain '/signin' with a generous timeout (30s)
+    try {
+        await this.page.waitForFunction(
+            () => !window.location.href.includes('/signin'),
+            null,
+            { timeout: 30000 }
+        );
+    } catch (e) {
+        console.warn('Login redirect wait timed out. Checking URL anyway...');
+    }
+
     const url = await this.loginPage.getCurrentUrl();
     console.log(`URL after login attempt: ${url}`);
-
     expect(url).to.not.include('/signin');
 });
 
