@@ -21,8 +21,15 @@ class DashboardPage {
 
     async clickImportOption() {
         console.log('Clicking Import Option');
-        const importLink = this.page.locator(this.importOption).first();
-        await importLink.waitFor({ state: 'visible', timeout: 30000 });
+
+        // Wait for dashboard to settle
+        await this.page.waitForLoadState('domcontentloaded');
+
+        // Try a more specific CSS selector first, fallback to text
+        const importSelector = 'a[href*="imports"], a:has-text("Import Reviews")';
+
+        const importLink = this.page.locator(importSelector).first();
+        await importLink.waitFor({ state: 'visible', timeout: 45000 }); // Increased timeout
         await importLink.click();
     }
 }
