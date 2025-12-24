@@ -49,23 +49,6 @@ class PagesPage {
             await btn.click();
             console.log('Clicked on the Create Page button');
 
-            // --- AI HEALING: Check for Name Modal with increased timeout ---
-            const nameInput = this.page.locator('input[placeholder*="Name" i], input[name*="name" i]').first();
-            const saveBtn = this.page.locator('button:has-text("Save"), button:has-text("Create")').first();
-
-            if (await nameInput.isVisible({ timeout: 15000 }).catch(() => false)) {
-                console.log('Detected Page Name modal. Entering name...');
-                const pageName = `Automation Page ${new Date().getTime()}`;
-                await nameInput.fill(pageName);
-                await this.page.waitForTimeout(1000);
-                await saveBtn.click();
-                console.log(`Page name "${pageName}" entered and saved.`);
-
-                // Explicitly wait for the list container to appear after saving
-                console.log('Waiting for review selection container...');
-                await this.page.locator('#page-feed-list-container').waitFor({ state: 'visible', timeout: 30000 });
-            }
-
         } catch (error) {
             console.error('Error clicking Create Page button:', error);
             throw new Error(`Failed to click "Create Page" button. \nLocators tried:\n- Role: button w/ "Create Page"\n- ID: #page-list-nodata button\n- Class: button.page-name-modal\n- Text: "Create Page"`);
@@ -121,34 +104,6 @@ class PagesPage {
         await btn.waitFor({ state: 'visible', timeout: 30000 });
         await btn.click();
         console.log('Clicked Save & Share button.');
-    }
-
-    async clickMagicLinkAndClose() {
-        console.log('Handling Magic Link flow...');
-        const magicLink = this.page.locator('a[href*="feedspace.io/p/"]').first();
-
-        if (await magicLink.isVisible({ timeout: 5000 }).catch(() => false)) {
-            console.log('Magic link found, clicking...');
-            const [newPage] = await Promise.all([
-                this.page.context().waitForEvent('page'),
-                magicLink.click()
-            ]);
-
-            await newPage.waitForLoadState('domcontentloaded');
-            console.log(`Opened magic link share page: ${newPage.url()}`);
-
-            // Switch back to original page and close the new tab
-            await this.page.bringToFront();
-            await newPage.close();
-            console.log('Switched back and closed magic link tab.');
-        }
-
-        // Click the final close button on the modal if it exists
-        const closeBtn = this.page.locator('button.close-modal, button#yt-import-modal-close, button:has-text("Close")').first();
-        if (await closeBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-            await closeBtn.click();
-            console.log('Closed the shared modal.');
-        }
     }
 }
 

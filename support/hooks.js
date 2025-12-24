@@ -8,7 +8,7 @@ let context;
 let page;
 
 BeforeAll(async function () {
-    browser = await chromium.launch({ headless: true }); // Required for CI/CD environments
+    browser = await chromium.launch({ headless: false }); // Headed mode for cookie extraction
 });
 
 AfterAll(async function () {

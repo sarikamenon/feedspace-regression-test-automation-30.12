@@ -3,9 +3,9 @@ Feature: Import Reviews
 
   Scenario: Login and Import reviews from all platforms sequentially
     Given I navigate to the Feedspace sign-in page
-    When I generate and enter an Ethereal test email
+    When I enter the email "test1235@mailinator.com"
     And I click on "Send Sign-In Code" button
-    And I fetch the OTP from Ethereal
+    And I fetch the OTP from Mailinator for user "test1235"
     And I enter the retrieved OTP
     Then I should be logged in successfully
     And I should be redirected to the workspace
