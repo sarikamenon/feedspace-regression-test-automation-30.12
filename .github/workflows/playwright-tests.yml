@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         # You can run tests in parallel by splitting scenarios
-        shard: [1, 1]  # Change to [1, 2] or [1, 3] for parallel execution
+        shard: [1]  # Change to [1, 2] or [1, 3] for parallel execution
     
     steps:
     - name: Checkout code
