@@ -8,11 +8,7 @@ let context;
 let page;
 
 BeforeAll(async function () {
-    const isCI = process.env.CI || process.env.GITHUB_ACTIONS;
-    browser = await chromium.launch({
-        headless: isCI ? true : false,
-        args: isCI ? ['--no-sandbox', '--disable-setuid-sandbox'] : []
-    });
+    browser = await chromium.launch({ headless: false }); // Set to true for headless
 });
 
 AfterAll(async function () {

@@ -1,5 +1,8 @@
 image: mcr.microsoft.com/playwright:v1.40.0-jammy
 
+# NOTE: For GitLab CI, schedules are managed via the UI: 
+# CI/CD -> Schedules -> New Schedule (Set to 0 9 * * *)
+
 stages:
   - test
   - report

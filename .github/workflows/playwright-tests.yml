@@ -1,18 +1,22 @@
-name: Playwright BDD Cucumber Tests - AI Native
+name: Playwright BDD Cucumber Tests
 
 on:
   push:
     branches: [ main, master, develop ]
   pull_request:
     branches: [ main, master, develop ]
-  schedule:
-    - cron: '0 5 * * *'  # 9:00 AM Dubai time (UTC+4 = 5:00 AM UTC)
   workflow_dispatch:  # Allows manual trigger from GitHub UI
 
 jobs:
   test:
-    timeout-minutes: 90
+    timeout-minutes: 60
     runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        # You can run tests in parallel by splitting scenarios
+        shard: [1, 1]  # Change to [1, 2] or [1, 3] for parallel execution
     
     steps:
     - name: Checkout code
@@ -30,38 +34,30 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps chromium
     
-    - name: Run Import Reviews Tests
-      run: |
-        mkdir -p reports screenshots
-        npx cucumber-js features/import_reviews.feature --format json:reports/cucumber-report.json
+    - name: Run Cucumber Tests
+      run: npm test
       continue-on-error: true  # Continue to report generation even if tests fail
     
     - name: Generate HTML Report
       if: always()
-      run: node report.js
-      continue-on-error: true
-    
-    - name: Generate Summary Report
-      if: always()
-      run: node generate-summary.js
+      run: npm run test:report
       continue-on-error: true
     
     - name: Upload Test Results
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: test-results
+        name: test-results-${{ matrix.shard }}
         path: |
-          reports/cucumber-report.html
-          reports/cucumber-report.json
-          summary-report.json
+          cucumber-report.html
+          report.json
         retention-days: 30
     
     - name: Upload Screenshots (if any)
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: screenshots
+        name: screenshots-${{ matrix.shard }}
         path: screenshots/
         retention-days: 30
         if-no-files-found: ignore
@@ -69,10 +65,5 @@ jobs:
     - name: Publish Test Report Summary
       if: always()
       run: |
-        echo "## 🤖 AI-Native Test Execution Summary" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        if [ -f summary-report.json ]; then
-          node generate-summary.js
-        else
-          echo "⚠️ Summary report not generated" >> $GITHUB_STEP_SUMMARY
-        fi
+        echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "Test execution completed. Check artifacts for detailed reports." >> $GITHUB_STEP_SUMMARY
