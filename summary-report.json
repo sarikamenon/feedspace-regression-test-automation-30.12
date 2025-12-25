@@ -1,0 +1,25 @@
+{
+    "timestamp": "2025-12-25T06:54:17.707Z",
+    "imports": {
+        "total": 2,
+        "successful": 2,
+        "failed": 0,
+        "totalReviews": 0,
+        "details": [
+            {
+                "platform": "Instagram Post",
+                "status": "success",
+                "reviews": 0,
+                "error": null
+            },
+            {
+                "platform": "Facebook Reviews",
+                "status": "success",
+                "reviews": 0,
+                "error": null
+            }
+        ]
+    },
+    "widgetStatus": "Created Successfully",
+    "pageStatus": "Created Successfully"
+}

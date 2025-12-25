@@ -1,49 +1,29 @@
 const fs = require('fs');
 const path = require('path');
 
-function generateSummary() {
-    const summaryPath = path.resolve(__dirname, 'summary-report.json');
-    const githubSummaryPath = process.env.GITHUB_STEP_SUMMARY;
+const summaryPath = path.join(__dirname, 'summary-report.json');
 
-    if (!fs.existsSync(summaryPath)) {
-        console.error('Summary report file not found.');
-        return;
+if (fs.existsSync(summaryPath)) {
+    try {
+        const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
+        console.log("--------------------------------------------------");
+        console.log("             CUSTOM EXECUTION SUMMARY             ");
+        console.log("--------------------------------------------------");
+        console.log(`Total Imports:     ${summary.imports.total}`);
+        console.log(`Successful:        ${summary.imports.successful}`);
+        console.log(`Failed:            ${summary.imports.failed}`);
+        console.log(`Total Reviews:     ${summary.imports.totalReviews}`);
+        console.log(`Widget Status:     ${summary.widgetStatus}`);
+        console.log(`Page Status:       ${summary.pageStatus}`);
+        console.log("--------------------------------------------------");
+        console.log("\nDetails:");
+        summary.imports.details.forEach(d => {
+            console.log(`[${d.status.toUpperCase()}] ${d.platform} - ${d.reviews} reviews ${d.error ? `(Error: ${d.error})` : ''}`);
+        });
+        console.log("--------------------------------------------------");
+    } catch (err) {
+        console.error("Error parsing summary-report.json:", err);
     }
-
-    const report = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
-    const imports = report.imports;
-
-    let markdown = `
-# 🚀 Feedspace AI-Native Execution Summary
-
-| Metric | Result |
-| --- | --- |
-| **Status** | ✅ Completed |
-| **Total Platforms Attempted** | ${imports.total} |
-| **Successful Imports** | ${imports.successful} |
-| **Failed Imports** | ${imports.failed} |
-| **Total Reviews Imported** | ${imports.totalReviews} |
-| **Page/WOL Creation** | ${report.pageStatus} |
-| **Widget Creation** | ${report.widgetStatus} |
-
-## 📊 Platform Details
-| Platform | Status | Reviews | Error |
-| --- | --- | --- | --- |
-`;
-
-    imports.details.forEach(item => {
-        const icon = item.status === 'success' ? '✅' : '❌';
-        markdown += `| ${item.platform} | ${icon} ${item.status} | ${item.reviews} | ${item.error || '-'} |\n`;
-    });
-
-    markdown += `\n*Report generated at: ${report.timestamp}*`;
-
-    if (githubSummaryPath) {
-        fs.appendFileSync(githubSummaryPath, markdown);
-    }
-
-    // Always log to console so user can see it in job logs too
-    console.log(markdown);
+} else {
+    console.log("summary-report.json not found. Run tests to generate it.");
 }
-
-generateSummary();
