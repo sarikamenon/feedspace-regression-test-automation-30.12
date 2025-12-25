@@ -8,7 +8,7 @@ let context;
 let page;
 
 BeforeAll(async function () {
-    browser = await chromium.launch({ headless: false }); // Set to true for headless
+    browser = await chromium.launch({ headless: process.env.CI ? true : false }); // Set to true for headless in CI
 });
 
 AfterAll(async function () {
