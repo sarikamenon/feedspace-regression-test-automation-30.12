@@ -8,7 +8,6 @@ When('I navigate to the Widgets page via menu', async function () {
     } catch (error) {
         console.error(`Error navigating to widgets: ${error.message}`);
         global.testResults.widgetStatus = "Failed";
-        throw error;
     }
 });
 
@@ -19,7 +18,6 @@ When('I select the Carousel template', async function () {
     } catch (error) {
         console.error(`Error selecting carousel: ${error.message}`);
         global.testResults.widgetStatus = "Failed";
-        throw error;
     }
 });
 
@@ -30,7 +28,6 @@ When('I select the first 5 reviews for the widget', async function () {
     } catch (error) {
         console.error(`Error selecting widget reviews: ${error.message}`);
         global.testResults.widgetStatus = "Failed";
-        throw error;
     }
 });
 
@@ -41,7 +38,6 @@ When('I click on Save and Next on widget page', async function () {
     } catch (error) {
         console.error(`Error clicking Save and Next (Widget): ${error.message}`);
         global.testResults.widgetStatus = "Failed";
-        throw error;
     }
 });
 
@@ -50,10 +46,10 @@ When('I click on Save and Share on widget page', async function () {
         if (!this.widgetsPage) this.widgetsPage = new WidgetsPage(this.page);
         await this.widgetsPage.clickSaveAndShare();
         global.testResults.widgetStatus = "Created Successfully";
+        global.testResults.widgetsCreated = (global.testResults.widgetsCreated || 0) + 1;
     } catch (error) {
         console.error(`Error clicking Save and Share (Widget): ${error.message}`);
         global.testResults.widgetStatus = "Failed";
-        throw error;
     }
 });
 

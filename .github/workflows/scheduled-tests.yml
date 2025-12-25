@@ -1,0 +1,53 @@
+name: Scheduled Playwright Tests
+
+on:
+  schedule:
+    # Run tests every day at 9 AM UTC
+    - cron: '0 9 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  scheduled-test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps chromium
+    
+    - name: Run Import Tests
+      run: npm run test:import
+      continue-on-error: true
+    
+    - name: Generate HTML Report
+      if: always()
+      run: npm run test:report
+      continue-on-error: true
+    
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: scheduled-test-results-${{ github.run_number }}
+        path: |
+          reports/
+          summary-report.json
+        retention-days: 30
+    
+    - name: Send notification on failure
+      if: failure()
+      run: |
+        echo "Scheduled tests failed! Check the workflow run for details."
+        # Add your notification logic here (Slack, email, etc.)

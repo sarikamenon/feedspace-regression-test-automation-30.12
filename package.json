@@ -6,6 +6,7 @@
   "scripts": {
     "test": "cucumber-js",
     "test:import": "cucumber-js features/import_reviews.feature --format json:reports/cucumber-report.json",
+    "test:report": "node report.js",
     "report": "node report.js"
   },
   "keywords": [
@@ -19,10 +20,7 @@
   "dependencies": {
     "@cucumber/cucumber": "^10.0.0",
     "@playwright/test": "^1.40.0",
-    "chai": "^4.3.7",
-    "imap": "^0.8.19",
-    "mailparser": "^3.9.1",
-    "nodemailer": "^7.0.12"
+    "chai": "^6.2.1"
   },
   "devDependencies": {
     "cucumber-html-reporter": "^7.2.0"

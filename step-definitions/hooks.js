@@ -1,4 +1,7 @@
-const { Before, AfterAll, After } = require('@cucumber/cucumber');
+const { Before, AfterAll, After, setDefaultTimeout } = require('@cucumber/cucumber');
+
+// Set default step timeout to 360 seconds (6 minutes)
+setDefaultTimeout(360 * 1000);
 const fs = require('fs');
 const path = require('path');
 
@@ -12,6 +15,8 @@ global.testResults = {
         totalReviews: 0,
         details: []
     },
+    widgetsCreated: 0,
+    pagesCreated: 0,
     widgetStatus: "Not Attempted",
     pageStatus: "Not Attempted"
 };

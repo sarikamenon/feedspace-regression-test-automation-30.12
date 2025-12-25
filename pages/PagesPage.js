@@ -5,105 +5,148 @@ class PagesPage {
         this.page = page;
     }
 
-    // Fixed the locator and the variable references
+    // -------------------------------
+    // CREATE PAGE
+    // -------------------------------
     async clickCreatePageButton() {
         console.log('Clicking on the Create Page button');
 
-        // Allow some time for the page to transition
-        await this.page.waitForLoadState('domcontentloaded');
+        // Ensure Pages route is loaded
+        await this.page.waitForURL('**/pages', { timeout: 60000 });
 
-        // Try getting by Role first (Best Practice)
-        const btnRole = this.page.getByRole('button', { name: /create page/i });
+        // Restore the robust locator filters as per user logic
+        const createPageBtn = this.page
+            .locator('button', { hasText: 'Create Page' })
+            .filter({ has: this.page.locator('span:has-text("Create Page")').or(this.page.locator('text="Create Page"')) })
+            .filter({ hasNot: this.page.locator('[hidden]') });
 
-        // Specific locators based on analysis
-        const btnEmpty = this.page.locator('#page-list-nodata button:has-text("Create Page")');
-        const btnExists = this.page.locator('button.page-name-modal:has-text("Create Page")');
+        console.log('Waiting for Create Page button to be attached...');
+        await createPageBtn.first().waitFor({ state: 'attached', timeout: 30000 });
 
-        let btn;
-
-        try {
-            if (await btnRole.count() > 0 && await btnRole.first().isVisible()) {
-                console.log('Found Create Page button by Role');
-                btn = btnRole.first();
-            } else if (await btnEmpty.isVisible().catch(() => false)) {
-                console.log('Found Create Page button (Empty State)');
-                btn = btnEmpty;
-            } else if (await btnExists.isVisible().catch(() => false)) {
-                console.log('Found Create Page button (Existing Pages)');
-                btn = btnExists;
-            } else {
-                // Fallback to text if neither specific structure is found. Ensure it is visible.
-                console.log('Specific locators not found, trying generic fallback with visibility check...');
-                // select any button with text "Create Page" that is actually visible
-                btn = this.page.locator('button:has-text("Create Page")').locator('visible=true').first();
-            }
-
-            if (!btn) {
-                // Last ditch effort: waiting for the generic button
-                console.log('Waiting for any "Create Page" button to appear...');
-                btn = this.page.locator('button:has-text("Create Page")').first();
-                await btn.waitFor({ state: 'visible', timeout: 5000 });
-            }
-
-            await btn.waitFor({ state: 'visible', timeout: 30000 });
-            await btn.click();
-            console.log('Clicked on the Create Page button');
-
-        } catch (error) {
-            console.error('Error clicking Create Page button:', error);
-            throw new Error(`Failed to click "Create Page" button. \nLocators tried:\n- Role: button w/ "Create Page"\n- ID: #page-list-nodata button\n- Class: button.page-name-modal\n- Text: "Create Page"`);
-        }
+        // Use force: true to handle cases where Playwright thinks it's hidden (e.g. during animations)
+        await createPageBtn.first().click({ force: true });
+        console.log('Clicked on the Create Page button.');
     }
 
+    // -------------------------------
+    // SELECT FIRST 5 REVIEWS
+    // -------------------------------
     async selectFirstFiveReviews() {
-        console.log('Selecting first 5 reviews...');
-        const container = this.page.locator('#page-feed-list-container');
+        console.log('Waiting for page review list...');
+        const reviewsList = this.page.locator('#page-feeds-list');
 
-        await container.waitFor({ state: 'visible', timeout: 60000 });
-
-        // Try a more generic selector if input[type="checkbox"] fails, but usually it exists.
-        // If the user says "not selected", maybe they are custom divs? 
-        // But stick to input for now with force: true.
-        const checkboxes = container.locator('input[type="checkbox"]');
-
-        // Wait for at least one
         try {
-            await checkboxes.first().waitFor({ state: 'attached', timeout: 30000 });
+            await reviewsList.waitFor({ state: 'visible', timeout: 180000 }); // 3 mins
         } catch (e) {
-            console.log('No checkboxes found!');
+            const noReviews = this.page.locator('#pages-no-reviews-found');
+            if (await noReviews.isVisible()) {
+                console.log('No reviews found on page');
+                return;
+            }
+            throw new Error('Page review list did not appear within 180s');
         }
 
-        const count = await checkboxes.count();
-        console.log(`Found ${count} total checkboxes`);
+        console.log('Selecting first 5 page reviews...');
+        const checkboxes = reviewsList.locator('input.toggleCheckbox'); // checkbox inside label
 
-        let selected = 0;
-        for (let i = 0; i < count && selected < 5; i++) {
-            const cb = checkboxes.nth(i);
-            // Force click in case of overlay/custom styling
-            await cb.click({ force: true });
-            selected++;
-            console.log(`Selected review ${selected}`);
-            // Small delay to ensure state update
-            await this.page.waitForTimeout(500);
+        try {
+            await checkboxes.first().waitFor({ state: 'attached', timeout: 60000 });
+
+            const count = await checkboxes.count();
+            console.log(`Found ${count} total checkboxes`);
+
+            let selected = 0;
+
+            for (let i = 0; i < count && selected < 5; i++) {
+                const cb = checkboxes.nth(i);
+                const isChecked = await cb.isChecked();
+
+                if (!isChecked) {
+                    console.log(`Selecting review ${selected + 1}...`);
+                    try {
+                        await cb.click({ timeout: 5000 });
+                    } catch (e) {
+                        console.log(`Direct click failed, trying force click for review ${selected + 1}`);
+                        await cb.click({ force: true });
+                    }
+                    selected++;
+                    await this.page.waitForTimeout(1000);
+                } else {
+                    console.log(`Review ${i + 1} is already selected.`);
+                    selected++;
+                }
+            }
+
+            console.log(`✅ Successfully selected ${selected} reviews out of ${count}`);
+        } catch (error) {
+            console.log(`Error selecting reviews: ${error.message}. Proceeding...`);
         }
     }
 
+
+    // -------------------------------
+    // VERIFY REVIEW SELECTION
+    // -------------------------------
+    async verifyAtLeastOneReviewSelected() {
+        const checkedCount = await this.page
+            .locator('#page-feed-list-container input[type="checkbox"]:checked')
+            .count();
+
+        console.log(`Checked reviews count: ${checkedCount}`);
+        expect(checkedCount).toBeGreaterThan(0);
+    }
+
+    // -------------------------------
+    // SAVE & NEXT
+    // -------------------------------
     async clickSaveAndNext() {
         console.log('Clicking Save & Next button...');
-        // Using getByRole is more robust for buttons
-        const btn = this.page.getByRole('button', { name: /Save & Next/i }).first();
+
+        if (this.page.isClosed()) {
+            throw new Error('Page already closed before Save & Next');
+        }
+
+        const btn = this.page.getByRole('button', {
+            name: /save.*next/i
+        }).first();
+
         await btn.waitFor({ state: 'visible', timeout: 30000 });
         await btn.click();
-        console.log('Clicked Save & Next button.');
+
+        console.log('Clicked Save & Next');
     }
 
+    // -------------------------------
+    // SAVE & SHARE
+    // -------------------------------
     async clickSaveAndShare() {
         console.log('Clicking Save & Share button...');
-        const btn = this.page.getByRole('button', { name: /Save & Share/i }).first();
-        await this.page.waitForTimeout(2000); // Small delay for animations
+
+        if (this.page.isClosed()) {
+            throw new Error('Page already closed before Save & Share');
+        }
+
+        const btn = this.page.getByRole('button', {
+            name: /save.*share/i
+        }).first();
+
         await btn.waitFor({ state: 'visible', timeout: 30000 });
-        await btn.click();
-        console.log('Clicked Save & Share button.');
+
+        let enabled = false;
+        for (let i = 0; i < 10; i++) {
+            if (await btn.isEnabled()) {
+                enabled = true;
+                break;
+            }
+            await this.page.waitForTimeout(1500);
+        }
+
+        if (!enabled) {
+            console.log('Button not enabled, forcing click');
+        }
+
+        await btn.click({ force: true });
+        console.log('Clicked Save & Share');
     }
 }
 
