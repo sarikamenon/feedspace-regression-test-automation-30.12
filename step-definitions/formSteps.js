@@ -102,20 +102,28 @@ Then('I click on the star rating button', async function () {
     const starLocator = page.locator("div[id='icon-type-star'] span:nth-child(2) svg");
     const starCount = await starLocator.count();
 
-    if (starCount > 0) {
-        console.log('Star rating found, clicking to enable submit...');
-        try {
-            await starLocator.first().waitFor({ state: 'visible', timeout: 3000 });
-            await starLocator.first().scrollIntoViewIfNeeded();
-            await starLocator.first().click({ force: true });
-            console.log('Star rating clicked');
-        } catch (e) {
-            console.warn('Failed to click star rating, skipping...', e);
-        }
-    } else {
-        console.log('No star rating present for this form, skipping...');
+    if (starCount === 0) {
+        console.log('Star rating not present for this form, skipping...');
+        return; // skip step
+    }
+
+    // Check visibility
+    const isVisible = await starLocator.first().isVisible();
+    if (!isVisible) {
+        console.log('Star rating element exists but is hidden, skipping...');
+        return;
+    }
+
+    // Safe click
+    try {
+        await starLocator.first().scrollIntoViewIfNeeded();
+        await starLocator.first().click({ force: true });
+        console.log('Clicked star rating');
+    } catch (e) {
+        console.warn('Failed to click star rating, skipping...', e);
     }
 });
+
 
 Then('I enter the feedback in the submit feedback field', async function () {
     if (!this.formsPage) this.formsPage = new FormsPage(this.page);
