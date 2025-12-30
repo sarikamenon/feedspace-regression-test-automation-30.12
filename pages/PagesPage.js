@@ -8,25 +8,55 @@ class PagesPage {
     // -------------------------------
     // CREATE PAGE
     // -------------------------------
-    async clickCreatePageButton() {
-        console.log('Clicking on the Create Page button');
+    // async clickCreatePageButton() {
+    //     console.log('Clicking on the Create Page button');
 
-        // Ensure Pages route is loaded
+    //     // Ensure Pages route is loaded
+    //     await this.page.waitForURL('**/pages', { timeout: 60000 });
+
+    //     // Restore the robust locator filters as per user logic
+    //     const createPageBtn = this.page
+    //         .locator('button', { hasText: 'Create Page' })
+    //         .filter({ has: this.page.locator('span:has-text("Create Page")').or(this.page.locator('text="Create Page"')) })
+    //         .filter({ hasNot: this.page.locator('[hidden]') });
+
+    //     console.log('Waiting for Create Page button to be attached...');
+    //     await createPageBtn.first().waitFor({ state: 'attached', timeout: 30000 });
+
+    //     // Use force: true to handle cases where Playwright thinks it's hidden (e.g. during animations)
+    //     await createPageBtn.first().click({ force: true });
+    //     console.log('Clicked on the Create Page button.');
+    // }
+    async clickCreatePageButton() {
+        console.log('Clicking on the Create Page button...');
+
+        // Wait for Pages route
         await this.page.waitForURL('**/pages', { timeout: 60000 });
 
-        // Restore the robust locator filters as per user logic
-        const createPageBtn = this.page
-            .locator('button', { hasText: 'Create Page' })
-            .filter({ has: this.page.locator('span:has-text("Create Page")').or(this.page.locator('text="Create Page"')) })
-            .filter({ hasNot: this.page.locator('[hidden]') });
+        // User provided specific selector logic:
+        // button class can be 'btn btn-sm btn-solid page-name-modal' OR 'btn btn-sm btn-solid page-name-modal whitespace-nowrap'
+        // targeted via the span inside 'span.btn-label' with text 'Create Page'
 
-        console.log('Waiting for Create Page button to be attached...');
-        await createPageBtn.first().waitFor({ state: 'attached', timeout: 30000 });
+        const createPageBtn = this.page.locator('button.page-name-modal').filter({ hasText: 'Create Page' });
 
-        // Use force: true to handle cases where Playwright thinks it's hidden (e.g. during animations)
+        console.log('Waiting for Create Page button to be visible...');
+        try {
+            await createPageBtn.first().waitFor({ state: 'visible', timeout: 10000 });
+        } catch (e) {
+            console.log('Button not visible, attempting to find by strict class attributes provided by user...');
+            // Fallback to exact user provided CSS if generic filter fails
+            const specificBtn = this.page.locator("button.page-name-modal span:has-text('Create Page')").first();
+            await specificBtn.waitFor({ state: 'visible', timeout: 10000 });
+            await specificBtn.click({ force: true });
+            console.log('Clicked via specific span locator.');
+            return;
+        }
+
+        // Click with force to handle potential overlays/animations
         await createPageBtn.first().click({ force: true });
-        console.log('Clicked on the Create Page button.');
+        console.log('"Create Page" button clicked successfully.');
     }
+
 
     // -------------------------------
     // SELECT FIRST 5 REVIEWS

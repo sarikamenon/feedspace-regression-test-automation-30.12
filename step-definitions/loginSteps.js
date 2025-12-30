@@ -8,10 +8,12 @@ Given('the user navigates to {string}', async function (url) {
 });
 
 When('the user enters the email {string} in the email field', async function (email) {
+    // Use the fixed enterEmail method with type + delay
     await this.loginPage.enterEmail(email);
 });
 
 When('the user enters the password {string} in the password field', async function (password) {
+    // Use the fixed enterPassword method
     await this.loginPage.enterPassword(password);
 });
 
@@ -21,7 +23,6 @@ When('the user clicks on the Login button', async function () {
 
 Then('the user should be logged in successfully', async function () {
     console.log('Waiting for login redirect...');
-    // Wait for URL to NOT contain '/login' or '/signin'
     try {
         await this.page.waitForFunction(
             () => !window.location.href.includes('/login') && !window.location.href.includes('/signin'),
@@ -41,9 +42,8 @@ Then('the user should be logged in successfully', async function () {
 Then('the user should be redirected to the workspace', async function () {
     await this.page.waitForTimeout(2000);
     const url = await this.loginPage.getCurrentUrl();
-    // Assuming workspace URL contains something specific or just isn't login
     console.log(`Workspace URL: ${url}`);
-    // expect(url).to.include('app.feedspace.io'); // This might be too generic if login is also there, but passing for now
+    // Optional: check for workspace-specific path if available
 });
 
 Then('the user clicks on the button {string}', async function (buttonText) {
@@ -55,6 +55,6 @@ Then('the user should be redirected to the dashboard', async function () {
     await this.page.waitForTimeout(3000);
     const url = await this.loginPage.getCurrentUrl();
     console.log(`Final Dashboard URL: ${url}`);
+    // Replace with exact dashboard path if known
     expect(url).to.include('app.feedspace.io');
-    // You might want to add a specific check for dashboard url path if known, e.g. /dashboard
 });
