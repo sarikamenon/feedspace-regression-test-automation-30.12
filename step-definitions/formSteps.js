@@ -119,6 +119,8 @@ Then('I click on the star rating button', async function () {
         await starLocator.first().scrollIntoViewIfNeeded();
         await starLocator.first().click({ force: true });
         console.log('Clicked star rating');
+        // Add delay for UI transition
+        await page.waitForTimeout(2000);
     } catch (e) {
         console.warn('Failed to click star rating, skipping...', e);
     }
@@ -132,6 +134,7 @@ Then('I enter the feedback in the submit feedback field', async function () {
     const feedbackLocator = page.locator('#text-review-comment');
 
     // Wait until the field is visible and enabled
+    await feedbackLocator.scrollIntoViewIfNeeded();
     await feedbackLocator.waitFor({ state: 'visible', timeout: 30000 });
 
     // Clear any existing value
