@@ -52,3 +52,53 @@ Feature: Import Reviews
     And I click on Save and Next on widget page
     And I click on Save and Share on widget page
     Then I click on the Widget Preview button
+    And switch back to the original tab
+    Then I click on the close button
+
+  # -------------------------------
+# Forms Flow (conditional Create/New Form)
+# -------------------------------
+@forms
+Scenario: Create form and submit feedback successfully
+
+    # Login Flow (Required for isolated run)
+    Given the user navigates to "https://app.feedspace.io/login?ma=1"
+    When the user enters the email "sarika.tier4@gmail.com" in the email field
+    And the user enters the password "qa123" in the password field
+    And the user clicks on the Login button
+    Then the user should be logged in successfully
+    And the user should be redirected to the workspace
+    And the user clicks on the button "Launch Workspace"
+    Then the user should be redirected to the dashboard
+
+  When I navigate to the Forms page via menu
+  And I click on the Create or New Form button if form exists
+  And I enter the form prompt in the form prompt field
+  Then I click on the Generate Form button
+  And the form is created successfully
+  And the user is redirected to the capture review page
+
+  And I click on the Save and Next button
+  And the user is redirected to the user info page
+
+  And I click on the Save and Next button
+  And the user is redirected to the thank you page
+
+  And I click on the Save and Next button
+  And the user is redirected to the settings page
+
+  And I click on the Save and Share button
+  Then I click on the Form Preview button
+
+  And I click on the Write Your Feedback button
+  And I click on the star rating button
+  And I click on the Submit Feedback button
+  And I click on the Submit button again
+
+  Then I see the success message "Thank You for Your Feedback"
+  And I switch back to the original tab
+  And I click on the Close button
+
+
+    
+

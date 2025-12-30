@@ -30,32 +30,44 @@ class PagesPage {
     async clickCreatePageButton() {
         console.log('Clicking on the Create Page button...');
 
-        // Wait for Pages route
+        // Wait for Pages route to start rendering
         await this.page.waitForURL('**/pages', { timeout: 60000 });
 
-        // User provided specific selector logic:
-        // button class can be 'btn btn-sm btn-solid page-name-modal' OR 'btn btn-sm btn-solid page-name-modal whitespace-nowrap'
-        // targeted via the span inside 'span.btn-label' with text 'Create Page'
+        const timeout = 15000; // total wait time in ms
+        const interval = 500;  // retry every 500ms
+        const start = Date.now();
+        let clicked = false;
 
-        const createPageBtn = this.page.locator('button.page-name-modal').filter({ hasText: 'Create Page' });
+        while (Date.now() - start < timeout) {
+            // Get all buttons with class 'page-name-modal'
+            const buttons = await this.page.locator('button.page-name-modal').elementHandles();
 
-        console.log('Waiting for Create Page button to be visible...');
-        try {
-            await createPageBtn.first().waitFor({ state: 'visible', timeout: 10000 });
-        } catch (e) {
-            console.log('Button not visible, attempting to find by strict class attributes provided by user...');
-            // Fallback to exact user provided CSS if generic filter fails
-            const specificBtn = this.page.locator("button.page-name-modal span:has-text('Create Page')").first();
-            await specificBtn.waitFor({ state: 'visible', timeout: 10000 });
-            await specificBtn.click({ force: true });
-            console.log('Clicked via specific span locator.');
-            return;
+            for (const btn of buttons) {
+                const text = (await btn.innerText()).replace(/\s+/g, ' ').trim();
+
+                if (text.includes('Create Page')) {
+                    try {
+                        await btn.scrollIntoViewIfNeeded();
+                        await btn.click({ force: true });
+                        console.log('✅ Clicked "Create Page" button successfully.');
+                        clicked = true;
+                        break;
+                    } catch (e) {
+                        console.log('Button found but not clickable yet, retrying...');
+                    }
+                }
+            }
+
+            if (clicked) break;
+
+            await this.page.waitForTimeout(interval);
         }
 
-        // Click with force to handle potential overlays/animations
-        await createPageBtn.first().click({ force: true });
-        console.log('"Create Page" button clicked successfully.');
+        if (!clicked) {
+            throw new Error('"Create Page" button not found or not clickable after 15s.');
+        }
     }
+
 
 
     // -------------------------------

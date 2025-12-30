@@ -5,6 +5,8 @@ class SharePage {
         this.page = page;
         this.magicLinkBtn = '.js-clipboard-default';
         this.closeBtn = this.page.getByRole('button', { name: 'Close' });
+        // User provided locator for widget close
+        this.widgetCloseBtn = 'button[id="widget-edit-form-close-btn"]';
     }
 
     async clickMagicLinkAndHandleTab() {
@@ -31,8 +33,17 @@ class SharePage {
 
     async clickCloseButton() {
         console.log('Clicking Close button');
-        await this.closeBtn.waitFor({ state: 'visible', timeout: 30000 });
-        await this.closeBtn.click();
+        const widgetClose = this.page.locator(this.widgetCloseBtn).first();
+        const shareClose = this.closeBtn.first();
+
+        if (await widgetClose.isVisible()) {
+            console.log('Found widget close button');
+            await widgetClose.click();
+        } else {
+            console.log('Found generic share close button (or waiting for it)');
+            await shareClose.waitFor({ state: 'visible', timeout: 30000 });
+            await shareClose.click();
+        }
     }
 
     async navigateToWidgets() {
