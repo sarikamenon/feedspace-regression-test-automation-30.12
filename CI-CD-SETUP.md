@@ -206,12 +206,12 @@ Different platforms handle secrets differently:
 
 1. Go to repository "Settings" → "Secrets and variables" → "Actions"
 2. Click "New repository secret"
-3. Add your secrets (e.g., `MAILINATOR_API_KEY`, `TEST_EMAIL`, etc.)
+3. Add your secrets (e.g., TEST_EMAIL, etc.)
 
 Access in workflow:
 ```yaml
 env:
-  MAILINATOR_API_KEY: ${{ secrets.MAILINATOR_API_KEY }}
+
 ```
 
 #### GitLab CI
@@ -223,7 +223,7 @@ env:
 Access in `.gitlab-ci.yml`:
 ```yaml
 variables:
-  MAILINATOR_API_KEY: $MAILINATOR_API_KEY
+
 ```
 
 #### Jenkins
@@ -234,7 +234,7 @@ variables:
 
 ```groovy
 environment {
-    MAILINATOR_API_KEY = credentials('mailinator-api-key')
+
 }
 ```
 
@@ -242,7 +242,7 @@ environment {
 
 ```bash
 # Email for testing
-TEST_EMAIL=test1234@mailinator.com
+TEST_EMAIL=sarika.tier4@gmail.com
 
 # Base URL for application
 BASE_URL=https://app.feedspace.io

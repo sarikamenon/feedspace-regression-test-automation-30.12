@@ -1,16 +1,18 @@
 Feature: Import Reviews
-  As a user, I want to import reviews from multiple platforms so that I can manage them in Feedspace.
+  As a user, I want to import reviews from multiple platforms
+  so that I can manage them in Feedspace.
 
   Scenario: Login and Import reviews from selected platforms and create Page/Widget
-    Given I navigate to the Feedspace sign-in page
-    When I enter the email "test1237@mailinator.com"
-    And I click on "Send Sign-In Code" button
-    And I fetch the OTP from Mailinator for user "test1237"
-    And I enter the retrieved OTP
-    Then I should be logged in successfully
-    And I should be redirected to the workspace
-    And I should click on the button "Launch Workspace"
-    Then I should be redirected to the dashboard
+
+    # Login Flow 
+    Given the user navigates to "https://app.feedspace.io/login?ma=1"
+    When the user enters the email "sarika.tier4@gmail.com" in the email field
+    And the user enters the password "qa123" in the password field
+    And the user clicks on the Login button
+    Then the user should be logged in successfully
+    And the user should be redirected to the workspace
+    And the user clicks on the button "Launch Workspace"
+    Then the user should be redirected to the dashboard
 
     # Import from Weblink
     When I click on the Import option

@@ -1,30 +1,11 @@
 {
-    "timestamp": "2025-12-25T14:50:09.629Z",
+    "timestamp": "2025-12-30T07:11:15.094Z",
     "imports": {
-        "total": 3,
-        "successful": 3,
+        "total": 0,
+        "successful": 0,
         "failed": 0,
-        "totalReviews": 28,
-        "details": [
-            {
-                "platform": "Import from Web Link",
-                "status": "success",
-                "reviews": 28,
-                "timestamp": "2025-12-25T14:51:19.247Z"
-            },
-            {
-                "platform": "Instagram Post",
-                "status": "success",
-                "reviews": 0,
-                "timestamp": "2025-12-25T14:51:29.569Z"
-            },
-            {
-                "platform": "Facebook Reviews",
-                "status": "success",
-                "reviews": 0,
-                "timestamp": "2025-12-25T14:53:05.986Z"
-            }
-        ]
+        "totalReviews": 0,
+        "details": []
     },
     "widgetsCreated": 0,
     "pagesCreated": 0,

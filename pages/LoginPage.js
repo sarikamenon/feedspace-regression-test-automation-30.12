@@ -3,61 +3,47 @@ class LoginPage {
         this.page = page;
         this.url = 'https://app.feedspace.io/signin';
 
-        // --- Locators ---
-        this.emailInput = 'input[type="email"], input[placeholder*="email" i]';
-        this.sendCodeBtn = 'button:has-text("Send Sign-In Code")';
-        this.otpInput = 'input[placeholder*="000000"], input[type="text"]';
+        // --- Locators (User Provided) ---
+        this.emailInput = '#email';
+        this.passwordInput = '#password';
+        this.loginBtn = '#loginButton';
 
         // Dynamic locator for any button with specific text
         this.genericBtn = (text) => `button:has-text("${text}")`;
     }
 
-    async navigate() {
-        console.log(`Navigating to ${this.url}`);
-        // Increased timeout to 60s and using domcontentloaded
-        await this.page.goto(this.url, { waitUntil: 'domcontentloaded', timeout: 60000 });
-        const emailField = this.page.locator(this.emailInput).first();
-        await emailField.waitFor({ state: 'visible', timeout: 30000 });
+    async navigate(url) {
+        const targetUrl = url || this.url;
+        console.log(`Navigating to ${targetUrl}`);
+        await this.page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
     }
 
     async enterEmail(email) {
-        // 1. Force fix: Replace '%40' with '@' if it exists
-        let cleanEmail = email.replace('%40', '@');
-
-        // 2. Remove any accidental whitespace
-        cleanEmail = cleanEmail.trim();
-
-        console.log(`Original input: ${email}`);
-        console.log(`Typing fixed email: ${cleanEmail}`);
-
-        const emailField = this.page.locator(this.emailInput).first();
-
-        // 3. Clear the field completely
+        console.log(`Entering email: ${email}`);
+        const emailField = this.page.locator(this.emailInput);
+        await emailField.waitFor({ state: 'visible', timeout: 30000 });
         await emailField.fill('');
-
-        // 4. Type one key at a time (Safer than fill for special characters)
-        await emailField.pressSequentially(cleanEmail, { delay: 100 });
+        await emailField.fill(email);
     }
 
-    async clickSendCode() {
-        const sendCodeBtn = this.page.locator(this.sendCodeBtn).first();
-        await sendCodeBtn.waitFor({ state: 'visible', timeout: 30000 });
-        await this.page.click(this.sendCodeBtn);
+    async enterPassword(password) {
+        console.log(`Entering password`);
+        const passwordField = this.page.locator(this.passwordInput);
+        await passwordField.waitFor({ state: 'visible', timeout: 30000 });
+        await passwordField.fill(password);
     }
 
-    async enterOtp(otp) {
-        const otpInput = this.page.locator(this.otpInput).first();
-        await otpInput.waitFor({ state: 'visible', timeout: 30000 });
-        await this.page.fill(this.otpInput, otp);
-
-        // PRESS ENTER: Triggers submission if there is no button
-        await this.page.keyboard.press('Enter');
+    async clickLoginButton() {
+        console.log('Clicking Login button');
+        const loginBtn = this.page.locator(this.loginBtn);
+        await loginBtn.waitFor({ state: 'visible', timeout: 30000 });
+        await loginBtn.click();
     }
 
     // Handles "Launch Workspace" or other buttons
     async clickButtonByText(text) {
         const btnSelector = this.genericBtn(text);
-        // Wait for the button to appear (it might take a moment after login)
+        console.log(`Clicking button with text: ${text}`);
         await this.page.locator(btnSelector).first().waitFor({ state: 'visible', timeout: 30000 });
         await this.page.click(btnSelector);
     }
