@@ -114,16 +114,30 @@ Then('I click on the star rating button', async function () {
         return;
     }
 
-    // Safe click
-    try {
-        await starLocator.first().scrollIntoViewIfNeeded();
-        await starLocator.first().click({ force: true });
-        console.log('Clicked star rating');
-        // Add delay for UI transition
-        await page.waitForTimeout(2000);
-    } catch (e) {
-        console.warn('Failed to click star rating, skipping...', e);
+    // Safe click logic with retry
+    const feedbackBox = page.locator('#text-review-comment');
+    const starSpan = page.locator("div[id='icon-type-star'] span:nth-child(2)"); // Target span instead of svg
+
+    for (let i = 0; i < 3; i++) {
+        try {
+            console.log(`Attempt ${i + 1}: Clicking star rating...`);
+            await starSpan.first().scrollIntoViewIfNeeded();
+            await starSpan.first().click({ force: true });
+
+            // Wait a bit and check if feedback box appeared
+            try {
+                await feedbackBox.waitFor({ state: 'visible', timeout: 2000 });
+                console.log('Star rating click successful, feedback box is visible.');
+                return; // Success
+            } catch (waitError) {
+                console.log('Feedback box not visible yet, retrying click...');
+            }
+        } catch (e) {
+            console.warn(`Attempt ${i + 1} failed:`, e);
+        }
+        await page.waitForTimeout(1000);
     }
+    console.warn('Failed to open feedback box after 3 attempts.');
 });
 
 
@@ -134,6 +148,10 @@ Then('I enter the feedback in the submit feedback field', async function () {
     const feedbackLocator = page.locator('#text-review-comment');
 
     // Wait until the field is visible and enabled
+    // We already waited in the previous step, but good to be safe
+    if (await feedbackLocator.isHidden()) {
+        console.log('Feedback detector says hidden, forcing show for debug...');
+    }
     await feedbackLocator.scrollIntoViewIfNeeded();
     await feedbackLocator.waitFor({ state: 'visible', timeout: 30000 });
 
@@ -175,7 +193,21 @@ Then('I see the success message {string}', async function (msg) {
 });
 
 Then('I switch back to the original tab', async function () {
-    await this.formsPage.cxCloseTab();
+    // Defensive check: if formsPage or previewPage exists, close it
+    // Note: We check if they are defined on 'this' (the world instance)
+    const previewPage = (this.formsPage && this.formsPage.previewPage) ||
+        (this.widgetsPage && this.widgetsPage.previewPage);
+
+    if (previewPage) {
+        console.log('Closing preview tab...');
+        await previewPage.close();
+        // Clean up the reference
+        if (this.formsPage) this.formsPage.previewPage = null;
+        if (this.widgetsPage) this.widgetsPage.previewPage = null;
+        await this.page.bringToFront();
+    } else {
+        console.log('No preview tab to close found.');
+    }
 });
 
 Then('I click on the Close button', async function () {

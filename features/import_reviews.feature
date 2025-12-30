@@ -52,7 +52,7 @@ Feature: Import Reviews
     And I click on Save and Next on widget page
     And I click on Save and Share on widget page
     Then I click on the Widget Preview button
-    And switch back to the original tab
+    And I switch back to the original tab
     Then I click on the close button
 
   # -------------------------------

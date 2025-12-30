@@ -16,7 +16,9 @@ AfterAll(async function () {
 });
 
 Before(async function () {
-    context = await browser.newContext();
+    context = await browser.newContext({
+        viewport: { width: 1920, height: 1080 }
+    });
     page = await context.newPage();
     this.page = page; // Attach page to the world instance
     this.context = context; // Attach context to the world instance
