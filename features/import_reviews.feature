@@ -92,6 +92,7 @@ Scenario: Create form and submit feedback successfully
 
   And I click on the Write Your Feedback button
   And I click on the star rating button
+  Then I enter the feedback in the submit feedback field
   And I click on the Submit Feedback button
   And I click on the Submit button again
 
