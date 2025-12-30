@@ -16,15 +16,19 @@ AfterAll(async function () {
 });
 
 Before(async function () {
-    context = await browser.newContext({
-        viewport: { width: 1920, height: 1080 }
-    });
+    const viewport = process.env.CI ? { width: 1920, height: 1080 } : { width: 1280, height: 720 };
+    context = await browser.newContext({ viewport });
     page = await context.newPage();
     this.page = page; // Attach page to the world instance
     this.context = context; // Attach context to the world instance
 });
 
-After(async function () {
-    await page.close();
-    await context.close();
+After(async function (scenario) {
+    if (scenario.result.status === 'FAILED') {
+        const screenshot = await this.page.screenshot({ path: `reports/screenshots/${scenario.pickle.name.replace(/ /g, '_')}_failure.png`, fullPage: true });
+        this.attach(screenshot, 'image/png');
+        console.log(`Screenshot saved for failed scenario: ${scenario.pickle.name}`);
+    }
+    await this.page.close();
+    await this.context.close();
 });

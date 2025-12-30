@@ -14,7 +14,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 507399
+              "duration": 799199
             }
           },
           {
@@ -22,7 +22,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 106147899
+              "duration": 212201199
             }
           },
           {
@@ -35,7 +35,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 4966491600
+              "duration": 2227108900
             }
           },
           {
@@ -48,7 +48,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 3535675200
+              "duration": 3504581999
             }
           },
           {
@@ -61,7 +61,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 1169078300
+              "duration": 1190897500
             }
           },
           {
@@ -74,7 +74,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 60230800
+              "duration": 59509599
             }
           },
           {
@@ -87,7 +87,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 1501061799
+              "duration": 1524692399
             }
           },
           {
@@ -100,7 +100,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 2005276600
+              "duration": 2020408699
             }
           },
           {
@@ -113,7 +113,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 62683499
+              "duration": 83858200
             }
           },
           {
@@ -126,7 +126,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 3011878600
+              "duration": 3020412100
             }
           },
           {
@@ -139,7 +139,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 78382799
+              "duration": 112651200
             }
           },
           {
@@ -152,7 +152,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 2584070999
+              "duration": 3594466199
             }
           },
           {
@@ -165,7 +165,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 908400099
+              "duration": 862739700
             }
           },
           {
@@ -178,7 +178,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 123915700
+              "duration": 190952499
             }
           },
           {
@@ -191,7 +191,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 8088413399
+              "duration": 8598933799
             }
           },
           {
@@ -204,215 +204,228 @@
             },
             "result": {
               "status": "passed",
-              "duration": 2256818899
+              "duration": 2813449799
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 80,
+            "name": "I check the star rating checkbox",
+            "match": {
+              "location": "step-definitions\\formSteps.js:98"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 21677599
             }
           },
           {
             "arguments": [],
             "keyword": "And ",
             "line": 81,
+            "name": "I disable it if enabled",
+            "match": {
+              "location": "step-definitions\\formSteps.js:103"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 635459900
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 83,
             "name": "I click on the Save and Next button",
             "match": {
               "location": "step-definitions\\formSteps.js:40"
             },
             "result": {
               "status": "passed",
-              "duration": 242808600
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 82,
-            "name": "the user is redirected to the user info page",
-            "match": {
-              "location": "step-definitions\\formSteps.js:45"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 1921699
+              "duration": 1329523499
             }
           },
           {
             "arguments": [],
             "keyword": "And ",
             "line": 84,
+            "name": "the user is redirected to the user info page",
+            "match": {
+              "location": "step-definitions\\formSteps.js:45"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 2243900
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 86,
             "name": "I click on the Save and Next button",
             "match": {
               "location": "step-definitions\\formSteps.js:40"
             },
             "result": {
               "status": "passed",
-              "duration": 209668300
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 85,
-            "name": "the user is redirected to the thank you page",
-            "match": {
-              "location": "step-definitions\\formSteps.js:50"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 1579600
+              "duration": 1246557099
             }
           },
           {
             "arguments": [],
             "keyword": "And ",
             "line": 87,
+            "name": "the user is redirected to the thank you page",
+            "match": {
+              "location": "step-definitions\\formSteps.js:50"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 2146800
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 89,
             "name": "I click on the Save and Next button",
             "match": {
               "location": "step-definitions\\formSteps.js:40"
             },
             "result": {
               "status": "passed",
-              "duration": 166194500
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 88,
-            "name": "the user is redirected to the settings page",
-            "match": {
-              "location": "step-definitions\\formSteps.js:54"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 2553299
+              "duration": 1242155800
             }
           },
           {
             "arguments": [],
             "keyword": "And ",
             "line": 90,
+            "name": "the user is redirected to the settings page",
+            "match": {
+              "location": "step-definitions\\formSteps.js:54"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 1917700
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 92,
             "name": "I click on the Save and Share button",
             "match": {
               "location": "step-definitions\\formSteps.js:58"
             },
             "result": {
               "status": "passed",
-              "duration": 152580800
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Then ",
-            "line": 91,
-            "name": "I click on the Form Preview button",
-            "match": {
-              "location": "step-definitions\\formSteps.js:62"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 1648821100
+              "duration": 211961599
             }
           },
           {
             "arguments": [],
             "keyword": "And ",
             "line": 93,
+            "name": "I click on the Form Preview button",
+            "match": {
+              "location": "step-definitions\\formSteps.js:62"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 1722018700
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 95,
             "name": "I click on the Write Your Feedback button",
             "match": {
               "location": "step-definitions\\formSteps.js:68"
             },
             "result": {
               "status": "passed",
-              "duration": 1568227099
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 94,
-            "name": "I click on the star rating button",
-            "match": {
-              "location": "step-definitions\\formSteps.js:98"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 77389900
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Then ",
-            "line": 95,
-            "name": "I enter the feedback in the submit feedback field",
-            "match": {
-              "location": "step-definitions\\formSteps.js:144"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 1434602100
+              "duration": 2052714899
             }
           },
           {
             "arguments": [],
             "keyword": "And ",
             "line": 96,
-            "name": "I click on the Submit Feedback button",
+            "name": "I enter the feedback in the submit feedback field",
             "match": {
-              "location": "step-definitions\\formSteps.js:168"
+              "location": "step-definitions\\formSteps.js:108"
             },
             "result": {
               "status": "passed",
-              "duration": 47209600
+              "duration": 1457938699
             }
           },
           {
             "arguments": [],
             "keyword": "And ",
             "line": 97,
-            "name": "I click on the Submit button again",
+            "name": "I click on the Submit Feedback button",
             "match": {
-              "location": "step-definitions\\formSteps.js:180"
+              "location": "step-definitions\\formSteps.js:130"
             },
             "result": {
               "status": "passed",
-              "duration": 40325100
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "Then ",
-            "line": 99,
-            "name": "I see the success message \"Thank You for Your Feedback\"",
-            "match": {
-              "location": "step-definitions\\formSteps.js:191"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 398676100
+              "duration": 47889800
             }
           },
           {
             "arguments": [],
             "keyword": "And ",
-            "line": 100,
-            "name": "I switch back to the original tab",
+            "line": 98,
+            "name": "I click on the Submit button again",
             "match": {
-              "location": "step-definitions\\formSteps.js:195"
+              "location": "step-definitions\\formSteps.js:141"
             },
             "result": {
               "status": "passed",
-              "duration": 20909500
+              "duration": 53958599
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 100,
+            "name": "I see the success message \"Thank You for Your Feedback\"",
+            "match": {
+              "location": "step-definitions\\formSteps.js:152"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 897947499
             }
           },
           {
             "arguments": [],
             "keyword": "And ",
             "line": 101,
-            "name": "I click on the Close button",
+            "name": "I switch back to the original tab",
             "match": {
-              "location": "step-definitions\\formSteps.js:213"
+              "location": "step-definitions\\formSteps.js:156"
             },
             "result": {
               "status": "passed",
-              "duration": 146743000
+              "duration": 46350899
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 102,
+            "name": "I click on the Close button",
+            "match": {
+              "location": "step-definitions\\formSteps.js:173"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 479392099
             }
           },
           {
@@ -420,7 +433,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 33593799
+              "duration": 111442399
             }
           },
           {
@@ -428,7 +441,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 85699
+              "duration": 235300
             }
           }
         ],

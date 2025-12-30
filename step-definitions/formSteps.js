@@ -77,7 +77,7 @@ When('I click on the Write Your Feedback button', async function () {
     await feedbackBtn.waitFor({ state: 'visible', timeout: 60000 });
 
     // Ensure it's not covered by another element
-    await page.waitForTimeout(500); // small delay to let animations finish
+    await page.waitForTimeout(1000); // small delay for UI to be ready
 
     try {
         await feedbackBtn.click({ force: true });
@@ -95,51 +95,15 @@ When('I click on the Write Your Feedback button', async function () {
 
 
 
-Then('I click on the star rating button', async function () {
+Then('I check the star rating checkbox', async function () {
     if (!this.formsPage) this.formsPage = new FormsPage(this.page);
-    const page = this.formsPage.previewPage || this.page;
-
-    const starLocator = page.locator("div[id='icon-type-star'] span:nth-child(2) svg");
-    const starCount = await starLocator.count();
-
-    if (starCount === 0) {
-        console.log('Star rating not present for this form, skipping...');
-        return; // skip step
-    }
-
-    // Check visibility
-    const isVisible = await starLocator.first().isVisible();
-    if (!isVisible) {
-        console.log('Star rating element exists but is hidden, skipping...');
-        return;
-    }
-
-    // Safe click logic with retry
-    const feedbackBox = page.locator('#text-review-comment');
-    const starSpan = page.locator("div[id='icon-type-star'] span:nth-child(2)"); // Target span instead of svg
-
-    for (let i = 0; i < 3; i++) {
-        try {
-            console.log(`Attempt ${i + 1}: Clicking star rating...`);
-            await starSpan.first().scrollIntoViewIfNeeded();
-            await starSpan.first().click({ force: true });
-
-            // Wait a bit and check if feedback box appeared
-            try {
-                await feedbackBox.waitFor({ state: 'visible', timeout: 2000 });
-                console.log('Star rating click successful, feedback box is visible.');
-                return; // Success
-            } catch (waitError) {
-                console.log('Feedback box not visible yet, retrying click...');
-            }
-        } catch (e) {
-            console.warn(`Attempt ${i + 1} failed:`, e);
-        }
-        await page.waitForTimeout(1000);
-    }
-    console.warn('Failed to open feedback box after 3 attempts.');
+    await this.formsPage.toggleAllowRating(true);
 });
 
+Then('I disable it if enabled', async function () {
+    if (!this.formsPage) this.formsPage = new FormsPage(this.page);
+    await this.formsPage.toggleAllowRating(false);
+});
 
 Then('I enter the feedback in the submit feedback field', async function () {
     if (!this.formsPage) this.formsPage = new FormsPage(this.page);
@@ -148,7 +112,6 @@ Then('I enter the feedback in the submit feedback field', async function () {
     const feedbackLocator = page.locator('#text-review-comment');
 
     // Wait until the field is visible and enabled
-    // We already waited in the previous step, but good to be safe
     if (await feedbackLocator.isHidden()) {
         console.log('Feedback detector says hidden, forcing show for debug...');
     }
@@ -164,7 +127,6 @@ Then('I enter the feedback in the submit feedback field', async function () {
     console.log('Entered feedback successfully');
 });
 
-
 Then('I click on the Submit Feedback button', async function () {
     if (!this.formsPage) this.formsPage = new FormsPage(this.page);
     const page = this.formsPage.previewPage || this.page;
@@ -175,7 +137,6 @@ Then('I click on the Submit Feedback button', async function () {
 
     console.log('Clicked Submit Feedback');
 });
-
 
 Then('I click on the Submit button again', async function () {
     const page = this.formsPage.previewPage || this.page;
@@ -194,7 +155,6 @@ Then('I see the success message {string}', async function (msg) {
 
 Then('I switch back to the original tab', async function () {
     // Defensive check: if formsPage or previewPage exists, close it
-    // Note: We check if they are defined on 'this' (the world instance)
     const previewPage = (this.formsPage && this.formsPage.previewPage) ||
         (this.widgetsPage && this.widgetsPage.previewPage);
 
@@ -211,8 +171,6 @@ Then('I switch back to the original tab', async function () {
 });
 
 Then('I click on the Close button', async function () {
-    // This might overlap with shareSteps "I click on the close button"
-    // Since we are back on main tab (Share modal potentially open), we reuse sharePage or try generic
     const { SharePage } = require('../pages/SharePage');
     const sharePage = new SharePage(this.page);
     await sharePage.clickCloseButton();

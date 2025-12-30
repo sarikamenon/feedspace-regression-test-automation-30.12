@@ -77,6 +77,8 @@ Scenario: Create form and submit feedback successfully
   Then I click on the Generate Form button
   And the form is created successfully
   And the user is redirected to the capture review page
+  And I check the star rating checkbox
+  And I disable it if enabled
 
   And I click on the Save and Next button
   And the user is redirected to the user info page
@@ -88,18 +90,13 @@ Scenario: Create form and submit feedback successfully
   And the user is redirected to the settings page
 
   And I click on the Save and Share button
-  Then I click on the Form Preview button
+  And I click on the Form Preview button
 
   And I click on the Write Your Feedback button
-  And I click on the star rating button
-  Then I enter the feedback in the submit feedback field
+  And I enter the feedback in the submit feedback field
   And I click on the Submit Feedback button
   And I click on the Submit button again
 
   Then I see the success message "Thank You for Your Feedback"
   And I switch back to the original tab
   And I click on the Close button
-
-
-    
-

@@ -13,6 +13,11 @@ class FormsPage {
 
         this.promptInput = 'textarea[placeholder*="Describe the type of form"]'; // Adjust selector
         this.generateBtn = 'button:has-text("Generate Form")';
+
+        // Star Rating / Allow Rating Toggle
+        this.allowRatingToggle = "label[for='allow_review_type_with_icon']";
+        this.allowRatingInput = "#allow_review_type_with_icon";
+        this.allowRatingLabel = "label[for='allow_review_type_with_icon'] span.block";
     }
 
     async navigateToForms() {
@@ -67,15 +72,43 @@ class FormsPage {
 
     async verifyFormCreated() {
         console.log('Verifying form creation success...');
-        // Wait for success toast or redirection to capture page
+        // Wait for list to load or empty state
         // Match 'forms/form_' which indicates a created form, regardless of the hash (#landing, #capture etc.)
         await this.page.waitForURL(/.*forms\/form_.*/, { timeout: 60000 });
     }
+
+    async toggleAllowRating(shouldBeEnabled) {
+        console.log(`Setting Allow Rating toggle to: ${shouldBeEnabled}`);
+        const checkbox = this.page.locator(this.allowRatingInput);
+        const isChecked = await checkbox.isChecked();
+
+        if (isChecked !== shouldBeEnabled) {
+            console.log(`Toggling checkbox (current state: ${isChecked})`);
+            // Clicking the label is often more reliable for custom switches
+            await this.page.click(this.allowRatingToggle);
+        } else {
+            console.log(`Checkbox already in desired state: ${shouldBeEnabled}`);
+        }
+    }
+
     async clickSaveAndNext() {
         console.log('Clicking Save & Next button...');
         const btn = this.page.getByRole('button', { name: /save.*next/i }).first();
         await btn.waitFor({ state: 'visible', timeout: 30000 });
+
+        // Defensive: Check if we are on User Info page and if Sub Title is missing
+        if (this.page.url().includes('user-info') || this.page.url().includes('user-details')) {
+            const subTitleInput = this.page.locator('input[placeholder*="Sub Title"], textarea[placeholder*="Sub Title"]').first();
+            if (await subTitleInput.isVisible() && (await subTitleInput.inputValue()) === '') {
+                console.log('Sub Title is empty, filling it to avoid validation error...');
+                await subTitleInput.fill('Please provide your details below');
+            }
+        }
+
         await btn.click({ force: true });
+
+        // Wait a bit to see if validation bubbles appear
+        await this.page.waitForTimeout(1000);
     }
 
     async clickSaveAndShare() {
@@ -110,7 +143,12 @@ class FormsPage {
         // settings -> /settings
         console.log(`Verifying redirect to ${pageName}...`);
         const urlPattern = new RegExp(pageName.replace(/ /g, '-').toLowerCase());
-        await this.page.waitForURL(urlPattern, { timeout: 30000 });
+        try {
+            await this.page.waitForURL(urlPattern, { timeout: 30000 });
+        } catch (error) {
+            console.error(`Failed to redirect to ${pageName}. Current URL: ${this.page.url()}`);
+            throw error;
+        }
     }
 
     // --- Preview Page Actions (operating on this.previewPage) ---
