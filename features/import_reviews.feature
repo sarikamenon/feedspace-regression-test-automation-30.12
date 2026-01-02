@@ -73,11 +73,11 @@ Scenario: Create form and submit feedback successfully
 
   When I navigate to the Forms page via menu
   And I click on the Create or New Form button if form exists
-  And I enter the form prompt in the form prompt field
+  And I enter the form prompt "Customer Satisfaction Survey" in the form prompt field
   Then I click on the Generate Form button
   And the form is created successfully
   And the user is redirected to the capture review page
-  And I check the star rating checkbox
+  And I check the Allow Ratings checkbox
   And I disable it if enabled
 
   And I click on the Save and Next button
