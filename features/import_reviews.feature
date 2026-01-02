@@ -77,6 +77,9 @@ Scenario: Create form and submit feedback successfully
   Then I click on the Generate Form button
   And the form is created successfully
   And the user is redirected to the capture review page
+  And I check the Allow text review checkbox is enabled
+  And I enable it if disabled
+  
   And I check the Allow Ratings checkbox
   And I disable it if enabled
 
