@@ -46,3 +46,6 @@ reports/
 summary-report.json
 test_analysis_output.txt
 test_output*.txt
+reports/*.json 
+summary-report.json 
+*.txt 
