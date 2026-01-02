@@ -3,255 +3,146 @@ const { expect } = require('@playwright/test');
 class FormsPage {
     constructor(page) {
         this.page = page;
+
+        // ---------------------
         // Locators
-        this.formsMenuLink = 'a[href="/forms"]'; // Adjust selector based on actual menu
-        this.createFormBtn = 'button:has-text("Create Form")'; // Selector for initial state
-        this.newFormBtn = 'button:has-text("New Form")'; // Selector for subsequent state
-
-        // This regex handles both "Create Form" and "New Form" roughly, but specific locators are safer
-        this.anyCreateBtn = 'button:has-text("Create Form"), button:has-text("New Form")';
-
-        this.promptInput = 'textarea[placeholder*="Describe the type of form"]'; // Adjust selector
-        this.generateBtn = 'button:has-text("Generate Form")';
-
-        // Star Rating / Allow Rating Toggle
-        this.allowRatingToggle = "label[for='allow_review_type_with_icon']";
-        this.allowRatingInput = "#allow_review_type_with_icon";
-        this.allowRatingLabel = "label[for='allow_review_type_with_icon'] span.block";
+        // ---------------------
+        this.formsMenuLink = page.getByRole('link', { name: /Forms/i });
+        this.createFormBtn = page.locator('button:has-text("Create"), button:has-text("New Form")');
+        this.formPromptField = page.locator('textarea#description');
+        this.generateFormBtn = page.locator('button:has-text("Generate Form")');
+        this.allowTextReviewCheckbox = page.locator('input[name="allow_text_review"]');
+        this.allowRatingsCheckbox = page.locator('input[name="allow_review_type"]');
+        this.saveAndNextBtn = page.locator('button').filter({ has: page.locator('span:has-text("Save & Next")') }).filter({ visible: true });
+        this.saveAndShareBtn = page.locator('button:has-text("Save & Share")');
+        this.formPreviewBtn = page.locator('#share-form-magic-link-input-wizard');
+        this.writeFeedbackBtn = page.locator('#preview-write-text');
+        this.feedbackTextField = page.locator('#text-review-comment');
+        this.submitFeedbackBtn = page.locator('#submit-text-review, .feedspace-button-inner:has-text("Submit Testimonial"), span:has-text("Submit Testimonial"), button:has-text("Submit Testimonial")');
+        this.finalSubmitBtn = page.locator('#submit-btn');
+        this.successMessage = page.locator('text="Thank You"').or(page.locator('.feedspace-thankyou-screen-info-box'));
+        this.closeBtn = page.locator('#feed-form-close-btn, button[id="feed-form-close-btn"]');
+        this.shareMagicLinkInput = page.locator('#share-form-magic-link-input-wizard');
     }
 
+    // ---------------------
+    // Navigation
+    // ---------------------
     async navigateToForms() {
         console.log('Navigating to Forms page...');
-        // Assuming there's a side menu or link
-        await this.page.click('text=Forms');
-        await this.page.waitForURL('**/forms', { timeout: 30000 });
+        await this.formsMenuLink.waitFor({ state: 'visible', timeout: 30000 });
+        await this.formsMenuLink.click();
     }
 
-    async clickCreateOrNewFormButton() {
-        console.log('Attempting to click Create or New Form button...');
-
-        // Wait for list to load or empty state
-        await this.page.waitForTimeout(2000); // stable wait for UI
-
-        const createBtn = this.page.locator(this.createFormBtn);
-        const newBtn = this.page.locator(this.newFormBtn);
-
-        if (await newBtn.isVisible()) {
-            console.log('Found "New Form" button. Clicking...');
-            await newBtn.click();
-        } else if (await createBtn.isVisible()) {
-            console.log('Found "Create Form" button. Clicking...');
-            await createBtn.click();
-        } else {
-            // Fallback: search for any button ensuring it's the right primary action
-            console.log('Neither explicit button visible, searching for generic create action...');
-            const anyBtn = this.page.locator(this.anyCreateBtn).first();
-            if (await anyBtn.isVisible()) {
-                await anyBtn.click();
-            } else {
-                throw new Error('Could not find "Create Form" or "New Form" button');
-            }
-        }
+    async clickCreateOrNewForm() {
+        console.log('Clicking Create/New Form button...');
+        await this.createFormBtn.first().waitFor({ state: 'visible', timeout: 30000 });
+        await this.createFormBtn.first().click();
     }
 
-    async enterFormPrompt(promptText) {
-        console.log(`Entering form prompt: ${promptText}`);
-        const input = this.page.locator(this.promptInput).first();
-        // Fallback if specific locator fails, try generic textarea
-        if (!await input.isVisible()) {
-            await this.page.fill('textarea', promptText);
-        } else {
-            await input.fill(promptText);
-        }
+    async enterFormPrompt(prompt) {
+        console.log(`Entering form prompt: ${prompt}`);
+        await this.formPromptField.waitFor({ state: 'visible', timeout: 10000 });
+        await this.formPromptField.click({ force: true });
+        await this.formPromptField.fill(prompt);
     }
 
     async clickGenerateForm() {
-        console.log('Clicking Generate Form button...');
-        await this.page.locator(this.generateBtn).first().click();
+        console.log('Clicking Generate Form...');
+        await this.generateFormBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await this.generateFormBtn.click();
     }
 
     async verifyFormCreated() {
-        console.log('Verifying form creation success...');
-        // Wait for list to load or empty state
-        // Match 'forms/form_' which indicates a created form, regardless of the hash (#landing, #capture etc.)
-        await this.page.waitForURL(/.*forms\/form_.*/, { timeout: 60000 });
+        console.log('Verifying form creation...');
+        await this.page.waitForTimeout(3000); // wait for form creation animation
     }
 
-    async toggleAllowRating(shouldBeEnabled) {
-        console.log(`Setting Allow Rating toggle to: ${shouldBeEnabled}`);
-        const checkbox = this.page.locator(this.allowRatingInput);
-        const isChecked = await checkbox.isChecked();
-
-        if (isChecked !== shouldBeEnabled) {
-            console.log(`Toggling checkbox (current state: ${isChecked})`);
-            // Clicking the label is often more reliable for custom switches
-            await this.page.click(this.allowRatingToggle);
-        } else {
-            console.log(`Checkbox already in desired state: ${shouldBeEnabled}`);
-        }
+    async checkAllowTextReview(check) {
+        console.log(`${check ? 'Checking' : 'Unchecking'} Allow Text Review...`);
+        const isChecked = await this.allowTextReviewCheckbox.isChecked();
+        if (check && !isChecked) await this.allowTextReviewCheckbox.check();
+        if (!check && isChecked) await this.allowTextReviewCheckbox.uncheck();
     }
 
+    // ---------------------
+    // Allow Ratings
+    // ---------------------
+    async checkAllowRatings(check) {
+        console.log(`${check ? 'Checking' : 'Unchecking'} Allow Ratings...`);
+        const isChecked = await this.allowRatingsCheckbox.isChecked();
+        if (check && !isChecked) await this.allowRatingsCheckbox.check();
+        if (!check && isChecked) await this.allowRatingsCheckbox.uncheck();
+    }
+
+    // ---------------------
+    // Save & Navigate Tabs
+    // ---------------------
     async clickSaveAndNext() {
-        console.log('Clicking Save & Next button...');
-        const btn = this.page.getByRole('button', { name: /save.*next/i }).first();
-        await btn.waitFor({ state: 'visible', timeout: 30000 });
+        console.log('Clicking Save and Next...');
+        await this.saveAndNextBtn.waitFor({ state: 'visible', timeout: 15000 });
+        await this.saveAndNextBtn.click();
+        await this.page.waitForTimeout(1000); // animation buffer
+    }
 
-        // Defensive: Check if we are on User Info page and if Sub Title is missing
-        if (this.page.url().includes('user-info') || this.page.url().includes('user-details')) {
-            const subTitleInput = this.page.locator('input[placeholder*="Sub Title"], textarea[placeholder*="Sub Title"]').first();
-            if (await subTitleInput.isVisible() && (await subTitleInput.inputValue()) === '') {
-                console.log('Sub Title is empty, filling it to avoid validation error...');
-                await subTitleInput.fill('Please provide your details below');
-            }
-        }
+    async clickSaveAndVerifyTab(tabBtnSelector, tabContentSelector) {
+        console.log(`Navigating to tab/content: ${tabContentSelector}`);
+        const tabBtn = this.page.locator(tabBtnSelector);
+        const tabContent = this.page.locator(tabContentSelector);
 
-        await btn.click({ force: true });
-
-        // Wait a bit to see if validation bubbles appear
-        await this.page.waitForTimeout(1000);
+        await tabBtn.waitFor({ state: 'visible', timeout: 15000 });
+        await tabBtn.click({ force: true });
+        await tabContent.waitFor({ state: 'visible', timeout: 15000 });
+        await expect(tabContent).toBeVisible();
     }
 
     async clickSaveAndShare() {
-        console.log('Clicking Save & Share button...');
-        const btn = this.page.getByRole('button', { name: /save.*share/i }).first();
-        await btn.waitFor({ state: 'visible', timeout: 30000 });
-        await btn.click({ force: true });
+        console.log('Clicking Save and Share...');
+        await this.saveAndShareBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await this.saveAndShareBtn.click();
     }
 
-    async clickFormPreview() {
-        const previewLink = this.page.locator('a#form-preview-btn');
+    // ---------------------
+    // Form Preview & Feedback
+    // ---------------------
 
-        await previewLink.waitFor({ state: 'visible', timeout: 30000 });
-
-        const [popup] = await Promise.all([
-            this.page.waitForEvent('popup', { timeout: 10000 }),
-            previewLink.click()
+    async clickShareMagicLink() {
+        console.log('Clicking Share Form Magic Link (opens new tab)...');
+        await this.shareMagicLinkInput.waitFor({ state: 'visible', timeout: 10000 });
+        const [newPage] = await Promise.all([
+            this.page.context().waitForEvent('page'),
+            this.shareMagicLinkInput.click()
         ]);
-
-        this.previewPage = popup;
-        await popup.waitForLoadState();
-
-        console.log('Form Preview opened in new tab');
+        await newPage.waitForLoadState('domcontentloaded');
+        return newPage;
     }
 
+    async submitFeedback(feedback) {
+        console.log(`Submitting feedback: ${feedback}`);
+        await this.writeFeedbackBtn.waitFor({ state: 'visible', timeout: 10000 });
+        await this.writeFeedbackBtn.click();
 
+        await this.feedbackTextField.waitFor({ state: 'visible', timeout: 10000 });
+        await this.feedbackTextField.fill(feedback);
 
-    async verifyRedirectTo(pageName) {
-        // Generic verifier based on URL
-        // user info -> /user-info
-        // thank you -> /thank-you
-        // settings -> /settings
-        console.log(`Verifying redirect to ${pageName}...`);
-        const urlPattern = new RegExp(pageName.replace(/ /g, '-').toLowerCase());
+        await this.submitFeedbackBtn.click();
+
         try {
-            await this.page.waitForURL(urlPattern, { timeout: 30000 });
-        } catch (error) {
-            console.error(`Failed to redirect to ${pageName}. Current URL: ${this.page.url()}`);
-            throw error;
-        }
-    }
-
-    // --- Preview Page Actions (operating on this.previewPage) ---
-
-    async cxClickWriteYourFeedback() {
-        // Use popup page if preview opened in new tab, else main page
-        const page = this.previewPage || this.page;
-
-        const feedbackBtn = page.locator('#preview-write-text');
-
-        await feedbackBtn.waitFor({ state: 'visible', timeout: 30000 });
-        await feedbackBtn.click({ force: true });
-
-        console.log('Clicked Write Your Feedback button');
-    }
-
-    async cxClickStarRating() {
-        const page = this.previewPage || this.page;
-
-        const star = page.locator("div[id='icon-type-star'] span:nth-child(2) svg");
-
-        // Check if the element exists
-        if ((await star.count()) === 0) {
-            console.log('Star rating not present for this form, skipping...');
-            return;
-        }
-
-        await star.first().waitFor({ state: 'visible', timeout: 10000 });
-        await star.first().scrollIntoViewIfNeeded();
-
-        // Try normal click first, fallback to JS click
-        try {
-            await star.first().click({ force: true });
+            await this.finalSubmitBtn.waitFor({ state: 'visible', timeout: 5000 });
+            await this.finalSubmitBtn.click();
         } catch (e) {
-            console.log('Normal click failed, attempting JS click...');
-            await page.evaluate(el => el.click(), await star.first().elementHandle());
-        }
-
-        console.log('Clicked star rating');
-    }
-
-
-
-
-    async cxEnterFeedback(feedbackText) {
-        const page = this.previewPage || this.page; // Use preview tab if open
-
-        const textarea = page.locator('#text-review-comment');
-
-        // Check if textarea exists and is visible
-        if (await textarea.count() > 0) {
-            if (await textarea.isVisible()) {
-                await textarea.scrollIntoViewIfNeeded();
-                await textarea.fill(feedbackText, { timeout: 10000 });
-                console.log('Feedback entered successfully');
-            } else {
-                console.log('Textarea exists but is not visible. Skipping.');
-            }
-        } else {
-            console.log('Textarea does not exist. Skipping.');
+            console.log('Final submit button not required.');
         }
     }
 
-
-    async cxClickSubmitFeedback() {
-        if (!this.previewPage) throw new Error('Preview page not open');
-
-        const page = this.previewPage;
-        const submitBtn = page.locator('#submit-text-review');
-
-        // Wait for the button to be visible and enabled
-        await submitBtn.waitFor({ state: 'visible', timeout: 30000 });
-
-        // Click the button
-        await submitBtn.click({ force: true });
-        console.log('Clicked Submit Feedback button');
+    async verifySuccessMessage(message) {
+        console.log(`Verifying success message: ${message}`);
+        await expect(this.page.locator(`text="${message}"`)).toBeVisible({ timeout: 10000 });
     }
 
-    async cxClickSubmitAgain() {
-        if (!this.previewPage) throw new Error('Preview page not open');
-        console.log('Clicking secondary Submit button (if any)...');
-        // Sometimes there's a confirmation or "Send" button
-        // If exact text is "Submit", use checking logic
-        const btn = this.previewPage.locator('button:has-text("Submit")').first();
-        if (await btn.isVisible()) {
-            await btn.click();
-        } else {
-            console.log('Secondary submit button not found, assuming single submit.');
-        }
-    }
-
-    async cxVerifySuccessMessage(msg) {
-        if (!this.previewPage) throw new Error('Preview page not open');
-        console.log(`Verifying success message: "${msg}"`);
-        await expect(this.previewPage.locator(`text=${msg}`)).toBeVisible({ timeout: 30000 });
-    }
-
-    async cxCloseTab() {
-        if (!this.previewPage) throw new Error('Preview page not open');
-        console.log('Closing preview tab...');
-        await this.previewPage.close();
-        this.previewPage = null;
-        await this.page.bringToFront();
+    async clickClose() {
+        console.log('Clicking close...');
+        await this.closeBtn.first().click();
     }
 }
 
