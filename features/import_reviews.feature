@@ -73,11 +73,14 @@ Scenario: Create form and submit feedback successfully
 
   When I navigate to the Forms page via menu
   And I click on the Create or New Form button if form exists
-  And I enter the form prompt in the form prompt field
+  And I enter the form prompt "Customer Satisfaction Survey" in the form prompt field
   Then I click on the Generate Form button
   And the form is created successfully
   And the user is redirected to the capture review page
-  And I check the star rating checkbox
+  And I check the Allow text review checkbox is enabled
+  And I enable it if disabled
+  
+  And I check the Allow Ratings checkbox
   And I disable it if enabled
 
   And I click on the Save and Next button
@@ -100,3 +103,49 @@ Scenario: Create form and submit feedback successfully
   Then I see the success message "Thank You for Your Feedback"
   And I switch back to the original tab
   And I click on the Close button
+  
+ # -------------------------------
+# Analyze Flow
+# -------------------------------
+@analyze
+Scenario: Generate analysis for all tabs
+    # Login Flow
+    Given the user navigates to "https://app.feedspace.io/login?ma=1"
+    When the user enters the email "sarika.tier4@gmail.com" in the email field
+    And the user enters the password "qa123" in the password field
+    And the user clicks on the Login button
+    Then the user should be logged in successfully
+    And the user should be redirected to the workspace
+    And the user clicks on the button "Launch Workspace"
+    Then the user should be redirected to the dashboard
+
+    # Navigate to Analyze page
+    When the user navigates to the Analyze page via menu
+    Then the Analyze page should be displayed
+
+    # Overview tab
+    When the user clicks on the "Overview" tab
+    And the user clicks on Analyze Reviews
+    Then the analysis results content should be checked for "Overview"
+    Then the system should display an appropriate message based on results content
+    And the user navigates to the "Positive Points" tab
+
+    # Positive Points tab
+    When the user clicks on the "Positive Points" tab
+    And the user clicks on Analyze Reviews
+    Then the analysis results content should be checked for "Positive Points"
+    Then the system should display an appropriate message based on results content
+    And the user navigates to the "Pain Points" tab
+
+    # Pain Points tab
+    When the user clicks on the "Pain Points" tab
+    And the user clicks on Analyze Reviews
+    Then the analysis results content should be checked for "Pain Points"
+    Then the system should display an appropriate message based on results content
+    And the user navigates to the "Improvements" tab
+
+    # Improvements tab
+    When the user clicks on the "Improvements" tab
+    And the user clicks on Analyze Reviews
+    Then the analysis results content should be checked for "Improvements"
+    Then the system should display an appropriate message based on results content
