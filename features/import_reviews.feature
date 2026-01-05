@@ -149,3 +149,35 @@ Scenario: Generate analysis for all tabs
     And the user clicks on Analyze Reviews
     Then the analysis results content should be checked for "Improvements"
     Then the system should display an appropriate message based on results content
+
+  # -------------------------------
+# Creative Space Flow
+# -------------------------------
+@CreativeSpace
+Scenario: Generate creative space Image for Reviews
+
+      # Login Flow (Required for isolated run)
+      Given the user navigates to "https://app.feedspace.io/login?ma=1"
+      When the user enters the email "sarika.tier4@gmail.com" in the email field
+      And the user enters the password "qa123" in the password field
+      And the user clicks on the Login button
+      Then the user should be logged in successfully
+      And the user should be redirected to the workspace
+      And the user clicks on the button "Launch Workspace"
+      Then the user should be redirected to the dashboard
+
+      When the user navigates to the Creative Space page via the menu
+      Then the Creative Space page should be displayed
+
+    When the user clicks the Create Image button
+Then the Create Image modal should be displayed
+
+    And the user selects a review from the list
+    And the user clicks on an image template from the list
+
+    When the user clicks the Save Image button
+    Then the image should be downloaded successfully
+
+    When the user clicks the Close button
+    Then the Create Image modal should be closed
+

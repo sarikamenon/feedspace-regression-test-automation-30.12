@@ -4,17 +4,17 @@
     "elements": [
       {
         "description": "",
-        "id": "import-reviews;create-form-and-submit-feedback-successfully",
+        "id": "import-reviews;generate-creative-space-image-for-reviews",
         "keyword": "Scenario",
-        "line": 62,
-        "name": "Create form and submit feedback successfully",
+        "line": 157,
+        "name": "Generate creative space Image for Reviews",
         "steps": [
           {
             "keyword": "Before",
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 799199
+              "duration": 748800
             }
           },
           {
@@ -22,410 +22,241 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 212201199
+              "duration": 210784899
             }
           },
           {
             "arguments": [],
             "keyword": "Given ",
-            "line": 65,
+            "line": 160,
             "name": "the user navigates to \"https://app.feedspace.io/login?ma=1\"",
             "match": {
               "location": "step-definitions\\loginSteps.js:5"
             },
             "result": {
               "status": "passed",
-              "duration": 2227108900
+              "duration": 2119887899
             }
           },
           {
             "arguments": [],
             "keyword": "When ",
-            "line": 66,
+            "line": 161,
             "name": "the user enters the email \"sarika.tier4@gmail.com\" in the email field",
             "match": {
               "location": "step-definitions\\loginSteps.js:10"
             },
             "result": {
               "status": "passed",
-              "duration": 3504581999
+              "duration": 3436783199
             }
           },
           {
             "arguments": [],
             "keyword": "And ",
-            "line": 67,
+            "line": 162,
             "name": "the user enters the password \"qa123\" in the password field",
             "match": {
               "location": "step-definitions\\loginSteps.js:15"
             },
             "result": {
               "status": "passed",
-              "duration": 1190897500
+              "duration": 1170215699
             }
           },
           {
             "arguments": [],
             "keyword": "And ",
-            "line": 68,
+            "line": 163,
             "name": "the user clicks on the Login button",
             "match": {
               "location": "step-definitions\\loginSteps.js:20"
             },
             "result": {
               "status": "passed",
-              "duration": 59509599
+              "duration": 62728600
             }
           },
           {
             "arguments": [],
             "keyword": "Then ",
-            "line": 69,
+            "line": 164,
             "name": "the user should be logged in successfully",
             "match": {
               "location": "step-definitions\\loginSteps.js:24"
             },
             "result": {
               "status": "passed",
-              "duration": 1524692399
+              "duration": 1508180199
             }
           },
           {
             "arguments": [],
             "keyword": "And ",
-            "line": 70,
+            "line": 165,
             "name": "the user should be redirected to the workspace",
             "match": {
               "location": "step-definitions\\loginSteps.js:42"
             },
             "result": {
               "status": "passed",
-              "duration": 2020408699
+              "duration": 2009354100
             }
           },
           {
             "arguments": [],
             "keyword": "And ",
-            "line": 71,
+            "line": 166,
             "name": "the user clicks on the button \"Launch Workspace\"",
             "match": {
               "location": "step-definitions\\loginSteps.js:49"
             },
             "result": {
               "status": "passed",
-              "duration": 83858200
+              "duration": 74563700
             }
           },
           {
             "arguments": [],
             "keyword": "Then ",
-            "line": 72,
+            "line": 167,
             "name": "the user should be redirected to the dashboard",
             "match": {
               "location": "step-definitions\\loginSteps.js:54"
             },
             "result": {
               "status": "passed",
-              "duration": 3020412100
+              "duration": 3004169499
             }
           },
           {
             "arguments": [],
             "keyword": "When ",
-            "line": 74,
-            "name": "I navigate to the Forms page via menu",
+            "line": 169,
+            "name": "the user navigates to the Creative Space page via the menu",
             "match": {
-              "location": "step-definitions\\formSteps.js:4"
+              "location": "step-definitions\\creativeSteps.js:7"
             },
             "result": {
               "status": "passed",
-              "duration": 112651200
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 75,
-            "name": "I click on the Create or New Form button if form exists",
-            "match": {
-              "location": "step-definitions\\formSteps.js:9"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 3594466199
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 76,
-            "name": "I enter the form prompt in the form prompt field",
-            "match": {
-              "location": "step-definitions\\formSteps.js:14"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 862739700
+              "duration": 415604300
             }
           },
           {
             "arguments": [],
             "keyword": "Then ",
-            "line": 77,
-            "name": "I click on the Generate Form button",
+            "line": 170,
+            "name": "the Creative Space page should be displayed",
             "match": {
-              "location": "step-definitions\\formSteps.js:20"
+              "location": "step-definitions\\creativeSteps.js:17"
             },
             "result": {
               "status": "passed",
-              "duration": 190952499
+              "duration": 2705699
             }
           },
           {
             "arguments": [],
-            "keyword": "And ",
-            "line": 78,
-            "name": "the form is created successfully",
+            "keyword": "When ",
+            "line": 172,
+            "name": "the user clicks the Create Image button",
             "match": {
-              "location": "step-definitions\\formSteps.js:25"
+              "location": "step-definitions\\creativeSteps.js:27"
             },
             "result": {
               "status": "passed",
-              "duration": 8598933799
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 79,
-            "name": "the user is redirected to the capture review page",
-            "match": {
-              "location": "step-definitions\\formSteps.js:31"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 2813449799
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 80,
-            "name": "I check the star rating checkbox",
-            "match": {
-              "location": "step-definitions\\formSteps.js:98"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 21677599
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 81,
-            "name": "I disable it if enabled",
-            "match": {
-              "location": "step-definitions\\formSteps.js:103"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 635459900
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 83,
-            "name": "I click on the Save and Next button",
-            "match": {
-              "location": "step-definitions\\formSteps.js:40"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 1329523499
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 84,
-            "name": "the user is redirected to the user info page",
-            "match": {
-              "location": "step-definitions\\formSteps.js:45"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 2243900
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 86,
-            "name": "I click on the Save and Next button",
-            "match": {
-              "location": "step-definitions\\formSteps.js:40"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 1246557099
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 87,
-            "name": "the user is redirected to the thank you page",
-            "match": {
-              "location": "step-definitions\\formSteps.js:50"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 2146800
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 89,
-            "name": "I click on the Save and Next button",
-            "match": {
-              "location": "step-definitions\\formSteps.js:40"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 1242155800
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 90,
-            "name": "the user is redirected to the settings page",
-            "match": {
-              "location": "step-definitions\\formSteps.js:54"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 1917700
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 92,
-            "name": "I click on the Save and Share button",
-            "match": {
-              "location": "step-definitions\\formSteps.js:58"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 211961599
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 93,
-            "name": "I click on the Form Preview button",
-            "match": {
-              "location": "step-definitions\\formSteps.js:62"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 1722018700
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 95,
-            "name": "I click on the Write Your Feedback button",
-            "match": {
-              "location": "step-definitions\\formSteps.js:68"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 2052714899
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 96,
-            "name": "I enter the feedback in the submit feedback field",
-            "match": {
-              "location": "step-definitions\\formSteps.js:108"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 1457938699
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 97,
-            "name": "I click on the Submit Feedback button",
-            "match": {
-              "location": "step-definitions\\formSteps.js:130"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 47889800
-            }
-          },
-          {
-            "arguments": [],
-            "keyword": "And ",
-            "line": 98,
-            "name": "I click on the Submit button again",
-            "match": {
-              "location": "step-definitions\\formSteps.js:141"
-            },
-            "result": {
-              "status": "passed",
-              "duration": 53958599
+              "duration": 4618410300
             }
           },
           {
             "arguments": [],
             "keyword": "Then ",
-            "line": 100,
-            "name": "I see the success message \"Thank You for Your Feedback\"",
+            "line": 173,
+            "name": "the Create Image modal should be displayed",
             "match": {
-              "location": "step-definitions\\formSteps.js:152"
+              "location": "step-definitions\\creativeSteps.js:36"
             },
             "result": {
               "status": "passed",
-              "duration": 897947499
+              "duration": 28251100
             }
           },
           {
             "arguments": [],
             "keyword": "And ",
-            "line": 101,
-            "name": "I switch back to the original tab",
+            "line": 175,
+            "name": "the user selects a review from the list",
             "match": {
-              "location": "step-definitions\\formSteps.js:156"
+              "location": "step-definitions\\creativeSteps.js:46"
             },
             "result": {
               "status": "passed",
-              "duration": 46350899
+              "duration": 2718316299
             }
           },
           {
             "arguments": [],
             "keyword": "And ",
-            "line": 102,
-            "name": "I click on the Close button",
+            "line": 176,
+            "name": "the user clicks on an image template from the list",
             "match": {
-              "location": "step-definitions\\formSteps.js:173"
+              "location": "step-definitions\\creativeSteps.js:55"
             },
             "result": {
               "status": "passed",
-              "duration": 479392099
+              "duration": 291949300
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 178,
+            "name": "the user clicks the Save Image button",
+            "match": {
+              "location": "step-definitions\\creativeSteps.js:64"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 3905937999
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 179,
+            "name": "the image should be downloaded successfully",
+            "match": {
+              "location": "step-definitions\\creativeSteps.js:73"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 2040600
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 181,
+            "name": "the user clicks the Close button",
+            "match": {
+              "location": "step-definitions\\creativeSteps.js:85"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 216555300
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 182,
+            "name": "the Create Image modal should be closed",
+            "match": {
+              "location": "step-definitions\\creativeSteps.js:94"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10754099
             }
           },
           {
@@ -433,7 +264,7 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 111442399
+              "duration": 98635200
             }
           },
           {
@@ -441,14 +272,14 @@
             "hidden": true,
             "result": {
               "status": "passed",
-              "duration": 235300
+              "duration": 134099
             }
           }
         ],
         "tags": [
           {
-            "name": "@forms",
-            "line": 61
+            "name": "@CreativeSpace",
+            "line": 156
           }
         ],
         "type": "scenario"
