@@ -180,4 +180,3 @@ Then the Create Image modal should be displayed
 
     When the user clicks the Close button
     Then the Create Image modal should be closed
-
