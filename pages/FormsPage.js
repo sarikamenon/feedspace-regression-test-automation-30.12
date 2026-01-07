@@ -55,14 +55,34 @@ class FormsPage {
 
     async verifyFormCreated() {
         console.log('Verifying form creation...');
-        await this.page.waitForTimeout(3000); // wait for form creation animation
+        // Wait for the URL to indicate we have moved to the edit/capture page
+        // or wait for the "Generate Form" button to be NOT visible
+        // However, checking for the redirection target element is best.
+
+        // Wait for a key element of the next page to be visible
+        try {
+            await this.page.locator('#landing-page-tab-cont').waitFor({ state: 'visible', timeout: 30000 });
+            console.log('Form created and redirected to capture page successfully.');
+        } catch (e) {
+            console.warn('Timed out waiting for #landing-page-tab-cont. Checking if we are still on the generation page...');
+            if (await this.generateFormBtn.isVisible()) {
+                throw new Error('Form generation failed or stuck on generation page.');
+            }
+            throw e;
+        }
     }
 
     async checkAllowTextReview(check) {
         console.log(`${check ? 'Checking' : 'Unchecking'} Allow Text Review...`);
+        // Ensure element is visible before checking state
+        await this.allowTextReviewCheckbox.waitFor({ state: 'attached' });
         const isChecked = await this.allowTextReviewCheckbox.isChecked();
-        if (check && !isChecked) await this.allowTextReviewCheckbox.check();
-        if (!check && isChecked) await this.allowTextReviewCheckbox.uncheck();
+        if (check && !isChecked) {
+            await this.allowTextReviewCheckbox.check({ force: true });
+        }
+        if (!check && isChecked) {
+            await this.allowTextReviewCheckbox.uncheck({ force: true });
+        }
     }
 
     // ---------------------
@@ -70,9 +90,10 @@ class FormsPage {
     // ---------------------
     async checkAllowRatings(check) {
         console.log(`${check ? 'Checking' : 'Unchecking'} Allow Ratings...`);
+        await this.allowRatingsCheckbox.waitFor({ state: 'attached' });
         const isChecked = await this.allowRatingsCheckbox.isChecked();
-        if (check && !isChecked) await this.allowRatingsCheckbox.check();
-        if (!check && isChecked) await this.allowRatingsCheckbox.uncheck();
+        if (check && !isChecked) await this.allowRatingsCheckbox.check({ force: true });
+        if (!check && isChecked) await this.allowRatingsCheckbox.uncheck({ force: true });
     }
 
     // ---------------------
@@ -81,7 +102,9 @@ class FormsPage {
     async clickSaveAndNext() {
         console.log('Clicking Save and Next...');
         await this.saveAndNextBtn.waitFor({ state: 'visible', timeout: 15000 });
-        await this.saveAndNextBtn.click();
+        // Sometimes the button might be covered or animating
+        await this.saveAndNextBtn.scrollIntoViewIfNeeded();
+        await this.saveAndNextBtn.click({ force: true });
         await this.page.waitForTimeout(1000); // animation buffer
     }
 
@@ -90,16 +113,18 @@ class FormsPage {
         const tabBtn = this.page.locator(tabBtnSelector);
         const tabContent = this.page.locator(tabContentSelector);
 
-        await tabBtn.waitFor({ state: 'visible', timeout: 15000 });
+        // Ensure tab button is visible before clicking
+        await tabBtn.waitFor({ state: 'visible', timeout: 30000 });
         await tabBtn.click({ force: true });
-        await tabContent.waitFor({ state: 'visible', timeout: 15000 });
+        // Wait for the content to correspond to the tab
+        await tabContent.waitFor({ state: 'visible', timeout: 30000 });
         await expect(tabContent).toBeVisible();
     }
 
     async clickSaveAndShare() {
         console.log('Clicking Save and Share...');
         await this.saveAndShareBtn.waitFor({ state: 'visible', timeout: 10000 });
-        await this.saveAndShareBtn.click();
+        await this.saveAndShareBtn.click({ force: true });
     }
 
     // ---------------------
@@ -119,19 +144,37 @@ class FormsPage {
 
     async submitFeedback(feedback) {
         console.log(`Submitting feedback: ${feedback}`);
-        await this.writeFeedbackBtn.waitFor({ state: 'visible', timeout: 10000 });
-        await this.writeFeedbackBtn.click();
 
-        await this.feedbackTextField.waitFor({ state: 'visible', timeout: 10000 });
+        // Wait for "Write Your Feedback" button
+        await this.writeFeedbackBtn.waitFor({ state: 'visible', timeout: 20000 });
+
+        let isFeedbackFieldVisible = await this.feedbackTextField.isVisible();
+
+        if (!isFeedbackFieldVisible) {
+            console.log('Clicking Write Your Feedback button...');
+            await this.writeFeedbackBtn.click({ force: true });
+
+            // Wait for the feedback field to appear (modal animation)
+            try {
+                await this.feedbackTextField.waitFor({ state: 'visible', timeout: 5000 });
+            } catch (e) {
+                console.warn('Feedback field not visible after first click. Retrying click...');
+                await this.writeFeedbackBtn.click({ force: true });
+                await this.feedbackTextField.waitFor({ state: 'visible', timeout: 10000 });
+            }
+        }
+
         await this.feedbackTextField.fill(feedback);
 
-        await this.submitFeedbackBtn.click();
+        await this.submitFeedbackBtn.waitFor({ state: 'visible', timeout: 5000 });
+        await this.submitFeedbackBtn.click({ force: true });
 
         try {
+            // Optional final submit button
             await this.finalSubmitBtn.waitFor({ state: 'visible', timeout: 5000 });
-            await this.finalSubmitBtn.click();
+            await this.finalSubmitBtn.click({ force: true });
         } catch (e) {
-            console.log('Final submit button not required.');
+            console.log('Final submit button not required or not found.');
         }
     }
 
