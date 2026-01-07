@@ -47,3 +47,6 @@ videos/
 # Cucumber artifacts
 cucumber-report.json
 summary-report.json
+
+# Playwright test results
+test-results/
