@@ -41,11 +41,21 @@ npm-debug.log*
 # CI/CD
 .npm/
 
+
 # Custom test outputs (Feedspace)
 reports/
+
 summary-report.json
 test_analysis_output.txt
 test_output*.txt
-reports/*.json 
-summary-report.json 
-*.txt 
+
+# Form test output logs
+debug_log.txt
+final_test_run.txt
+form_*.txt
+*_debug.txt
+*_output.txt
+*_results.txt
+*_final*.txt
+summary.txt
+
