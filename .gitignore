@@ -1,55 +1,12 @@
-# Dependencies
+# ================================
+# Node / Playwright / Cucumber
+# ================================
+
+# Node modules
 node_modules/
-package-lock.json
-
-# Test Reports
-cucumber-report.html
-report.json
-allure-results/
-allure-report/
-
-# Screenshots and Videos
-screenshots/
-videos/
-test-results/
-
-# Playwright
-.playwright/
-ms-playwright/
-
-# Environment variables
-.env
-.env.local
-.env.*.local
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
-.DS_Store
-Thumbs.db
 
 # Logs
-logs/
 *.log
-npm-debug.log*
-
-# CI/CD
-.npm/
-
-
-# Custom test outputs (Feedspace)
-reports/
-
-summary-report.json
-test_analysis_output.txt
-test_output*.txt
-
-# Form test output logs
 debug_log.txt
 final_test_run.txt
 form_*.txt
@@ -59,3 +16,34 @@ form_*.txt
 *_final*.txt
 summary.txt
 
+# Test reports
+reports/
+reports/*.json
+summary-report.json
+test_analysis_output.txt
+test_output*.txt
+
+# Screenshots / videos (Playwright)
+screenshots/
+videos/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.DS_Store
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE / OS files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Cucumber artifacts
+cucumber-report.json
+summary-report.json
