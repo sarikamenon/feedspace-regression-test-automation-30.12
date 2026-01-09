@@ -181,21 +181,52 @@ class FeedboxPage {
     }
 
     async clickFirstUnlabeledReviewCheckbox() {
-        console.log('Selecting first unlabeled review...');
-        // Try to filter cards that do NOT have tags/badges/labels
-        const unlabeledCard = this.page.locator('div:has(button[data-feed-selection-toggle]), tr:has(button[data-feed-selection-toggle])')
-            .filter({ hasNot: this.page.locator('.feed-card-tags, .tags-container, span.badge, span.tag') })
-            .first();
+        console.log('Selecting first visible unlabeled review...');
 
-        // Fallback: If we can't reliably filter, just click the first one and warn
-        if (await unlabeledCard.count() === 0) {
-            console.warn('Could not reliably find an unlabeled review via filter. Clicking the first available checkbox as fallback.');
-            await this.firstReviewCheckbox.click();
-        } else {
-            const checkbox = unlabeledCard.locator('button[data-feed-selection-toggle], input[type="checkbox"]').first();
-            await checkbox.waitFor({ state: 'visible', timeout: 5000 });
-            await checkbox.click();
+        // 1. Find all potential review cards/containers
+        // Assuming a common container class or structure; using a broad match first then filtering
+        // "Find only visible review cards"
+
+        // Strategy: 
+        // a. Find the toggle button which is visible
+        // b. Go up to its container (card)
+        // c. Check if that card has any label
+
+        // Locate all visible toggle buttons (not the hidden inputs)
+        const toggleButtons = this.page.locator('button[data-feed-selection-toggle]').filter({ hasText: '' }); // ensure it's the button
+
+        const count = await toggleButtons.count();
+        console.log(`Found ${count} toggle buttons.`);
+
+        for (let i = 0; i < count; i++) {
+            const btn = toggleButtons.nth(i);
+
+            // Check visibility
+            if (!(await btn.isVisible())) continue;
+
+            // Get the card container (closest logic depends on DOM, assuming parent or grandparent)
+            // User hint: "Find reviews without any label"
+            // We can check if the card containing this button has a label
+
+            // Go up to the card element. Adjust selector as needed. 
+            // Often it's a div with a class or the row.
+            // Let's assume the button is inside the card.
+            // We will look for a parent that MIGHT contain tags.
+            const card = btn.locator('xpath=./ancestor::div[contains(@class, "feed-card") or contains(@class, "review-card") or contains(@class, "border")]').first();
+
+            // Check if this card has labels
+            // User provided locator for label verification: .feed-card-tags span, .review-card span
+            const hasLabels = await card.locator('.feed-card-tags span, .tags-container span, span.badge').count() > 0;
+
+            if (!hasLabels) {
+                console.log(`Found unlabeled visible review at index ${i}. Clicking...`);
+                await btn.click();
+                return;
+            }
         }
+
+        console.warn('No visible unlabeled reviews found. Attempting to click the first visible toggle as fallback.');
+        await toggleButtons.first().click();
     }
 }
 
