@@ -206,7 +206,9 @@ class FeedboxPage {
     async verifyLabelAttached(labelName) {
         console.log(`Verifying label "${labelName}" is attached...`);
         // Use a robust list of potential containers/tags matching the selection logic + broader fallbacks
+        // User specifically pointed out ".feed-label-chip"
         const labelPill = this.page.locator([
+            `.feed-label-chip:has-text("${labelName}")`,
             `.feed-card-tags span:has-text("${labelName}")`,
             `.tags-container span:has-text("${labelName}")`,
             `span.badge:has-text("${labelName}")`,
@@ -221,6 +223,7 @@ class FeedboxPage {
         console.log(`Verifying label "${labelName}" is removed...`);
         // Check that the label pill is either NOT visible or NOT attached
         const labelPill = this.page.locator([
+            `.feed-label-chip:has-text("${labelName}")`,
             `.feed-card-tags span:has-text("${labelName}")`,
             `.tags-container span:has-text("${labelName}")`,
             `span.badge:has-text("${labelName}")`,
