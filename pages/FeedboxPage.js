@@ -131,17 +131,29 @@ class FeedboxPage {
 
     async clickLabelIcon() {
         console.log('Clicking Label icon...');
-        // User provided specific locator: 
-        // #batch-operations-panel > div > div > div.flex.flex-wrap.items-center.gap-2.md\:gap-3 > div > div > button > span > span
-        // We will try to use a slightly more robust version of it, targeting the button in the batch panel
-        const icon = this.page.locator('#batch-operations-panel button').filter({ hasText: 'Label' }).first().or(
-            this.page.locator('#batch-operations-panel svg.lucide-tag').locator('..')
-        ).or(
-            this.page.locator('button:has-text("Label")')
-        );
+        // The previous attempt found a hidden button. 
+        // We will target the button with the specific data attribute found in the logs: data-review-label-trigger
+        // and ensure we interact with the visible one.
 
-        await icon.first().waitFor({ state: 'visible', timeout: 10000 });
-        await icon.first().click();
+        const icon = this.page.locator('button[data-review-label-trigger]').filter({ hasText: 'Label' });
+
+        // Wait for at least one to be visible
+        try {
+            await icon.first().waitFor({ state: 'attached', timeout: 5000 });
+            if (await icon.count() > 1) {
+                // specific handling if multiple exist (desktop/mobile)
+                await icon.locator('visible=true').first().click();
+            } else {
+                await icon.click();
+            }
+        } catch (e) {
+            console.warn('Primary locator failed/timeout, trying fallback to forced click on first...', e.message);
+            // Fallback: try clicking the first one even if perceived hidden or use the user's deep selector
+            // User provided specific locator: 
+            // #batch-operations-panel > div > div > div.flex.flex-wrap.items-center.gap-2.md\:gap-3 > div > div > button > span > span
+            // We'll trust the data attribute first but force it.
+            await this.page.locator('button[data-review-label-trigger]').first().click({ force: true });
+        }
     }
 
     async selectLabel(labelName) {
