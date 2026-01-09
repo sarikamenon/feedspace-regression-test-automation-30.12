@@ -55,3 +55,27 @@ When('the user clicks on Remove button', async function () {
 Then('the message {string} should be displayed', async function (message) {
     await this.feedboxPage.verifySuccessMessage(message);
 });
+
+// -------------------
+// Label Steps
+// -------------------
+
+When('the user clicks on the Label icon', async function () {
+    await this.feedboxPage.clickLabelIcon();
+});
+
+When('the user selects the label {string}', async function (label) {
+    await this.feedboxPage.selectLabel(label);
+});
+
+When('the user applies the label', async function () {
+    await this.feedboxPage.clickApplyLabel();
+});
+
+Then('the label {string} should be attached to the review', async function (label) {
+    await this.feedboxPage.verifyLabelAttached(label);
+});
+
+When('the user selects the first unlabeled review', async function () {
+    await this.feedboxPage.clickFirstUnlabeledReviewCheckbox();
+});

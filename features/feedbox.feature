@@ -40,3 +40,17 @@ Scenario: Unmark favourite reviews
   Then the confirmation popup "Remove from favorites" should be displayed
   When the user clicks on Remove button 
   Then the message "Marked unfavourite successfully" should be displayed
+
+
+# -------------------------------
+# Scenario 3: Apply existing label
+# -------------------------------
+@label-test
+Scenario: Apply existing label to unlabeled review
+  When the user clicks on the select reviews option
+  And the user selects the first unlabeled review
+  And the user clicks on the Label icon
+  And the user selects the label "automation"
+  And the user applies the label
+  Then the label "automation" should be attached to the review
+

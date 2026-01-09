@@ -100,30 +100,6 @@ class FeedboxPage {
         await this.confirmAddToFavorites(expectedTitle);
     }
 
-    async clickFirstReviewCheckbox() {
-        console.log('Clicking check box of first review...');
-        await this.firstReviewCheckbox.waitFor({ state: 'visible', timeout: 10000 });
-        await this.firstReviewCheckbox.click();
-    }
-
-    async clickUnfavouriteIcon() {
-        console.log('Clicking Unfavourite icon...');
-        await this.unfavouriteIcon.waitFor({ state: 'visible', timeout: 5000 });
-        await this.unfavouriteIcon.click();
-    }
-
-    async confirmUnfavouriteAction(expectedTitle = "Remove from favorites") {
-        console.log(`Waiting for "${expectedTitle}" popup...`);
-        // Re-use the confirm logic. 
-        // If the button text is different (e.g. "Remove"), we might need to adjust confirmAddToFavorites or create a new internal helper.
-        // Assuming for now it uses the same structure. 
-        // If "Remove" button has a different ID, we should handle that. 
-        // User snippet didn't give Remove button ID, but usually it's consistent.
-        // Let's assume it works like Add but verify title.
-
-        await this.confirmAddToFavorites(expectedTitle);
-    }
-
     async verifyPopupTitle(expectedTitle) {
         console.log(`Verifying popup title: "${expectedTitle}"...`);
         const titleLocator = this.page.locator('#batch-action-title');
@@ -149,6 +125,73 @@ class FeedboxPage {
         console.log('Success message verified.');
     }
 
+    // -------------------
+    // Label Logic
+    // -------------------
+
+    async clickLabelIcon() {
+        console.log('Clicking Label icon...');
+        // Try multiple probable locators for the Label/Tag icon in the batch panel
+        const icon = this.page.locator('#batch-operations-panel button:has-text("Label"), #batch-operations-panel button[title="Add Label"], #batch-operations-panel svg.lucide-tag, button.add-tag-btn').first();
+        await icon.waitFor({ state: 'visible', timeout: 10000 });
+        await icon.click();
+    }
+
+    async selectLabel(labelName) {
+        console.log(`Selecting label: ${labelName}`);
+        // Locator for the search/input field in the label modal
+        const input = this.page.locator('input[placeholder*="Search"], input[placeholder*="Tag"], input[placeholder*="Label"]');
+        await input.waitFor({ state: 'visible', timeout: 10000 });
+        await input.fill(labelName);
+        await this.page.waitForTimeout(1000); // Debounce wait
+
+        // Locator for existing label checkbox (assuming list is filtered)
+        const existingOption = this.page.locator(`div:has-text("${labelName}")`).first();
+
+        if (await existingOption.count() > 0) {
+            console.log('Label found. Selecting...');
+            const checkbox = existingOption.locator('input[type="checkbox"]');
+            if (await checkbox.count() > 0 && await checkbox.isChecked()) {
+                console.log('Label already checked via filter.');
+            } else {
+                await existingOption.click();
+            }
+        } else {
+            console.warn(`Label "${labelName}" not found in list. Unable to select.`);
+        }
+    }
+
+    async clickApplyLabel() {
+        console.log('Clicking Apply Label button...');
+        const applyBtn = this.page.locator('button:has-text("Apply")');
+        await applyBtn.waitFor({ state: 'visible' });
+        await applyBtn.click();
+    }
+
+    async verifyLabelAttached(labelName) {
+        console.log(`Verifying label "${labelName}" is attached...`);
+        // Check for the label pill on the first review card (or selected reviews)
+        const labelPill = this.page.locator(`.feed-card-tags span:has-text("${labelName}"), .review-card span:has-text("${labelName}")`).first();
+        await expect(labelPill).toBeVisible({ timeout: 10000 });
+    }
+
+    async clickFirstUnlabeledReviewCheckbox() {
+        console.log('Selecting first unlabeled review...');
+        // Try to filter cards that do NOT have tags/badges/labels
+        const unlabeledCard = this.page.locator('div:has(button[data-feed-selection-toggle]), tr:has(button[data-feed-selection-toggle])')
+            .filter({ hasNot: this.page.locator('.feed-card-tags, .tags-container, span.badge, span.tag') })
+            .first();
+
+        // Fallback: If we can't reliably filter, just click the first one and warn
+        if (await unlabeledCard.count() === 0) {
+            console.warn('Could not reliably find an unlabeled review via filter. Clicking the first available checkbox as fallback.');
+            await this.firstReviewCheckbox.click();
+        } else {
+            const checkbox = unlabeledCard.locator('button[data-feed-selection-toggle], input[type="checkbox"]').first();
+            await checkbox.waitFor({ state: 'visible', timeout: 5000 });
+            await checkbox.click();
+        }
+    }
 }
 
 module.exports = { FeedboxPage };
