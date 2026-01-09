@@ -145,28 +145,43 @@ class FormsPage {
     async fillFeedback(feedback) {
         console.log(`Filling feedback: ${feedback}`);
 
-        // Ensure "Write Your Feedback" button is visible
-        await this.writeFeedbackBtn.waitFor({ state: 'visible', timeout: 20000 });
+        // 1. Check if the feedback field is ALREADY visible (e.g. opened by previous step)
+        if (await this.feedbackTextField.isVisible()) {
+            console.log('Feedback field is already visible. Skipping click.');
+            await this.feedbackTextField.fill(feedback);
+            return;
+        }
+
+        // 2. If not visible, we need to click "Write Your Feedback"
+        console.log('Feedback field not visible. Looking for Write Your Feedback button...');
+
+        // Robust locator for the button
+        const writeBtn = this.page.locator('#preview-write-text, button:has(#preview-write-text), button:has-text("Write Your Experience"), button:has-text("Write Your Feedback")').first();
 
         // Retry loop to click 'Write Your Feedback' and wait for field to be visible
         const maxRetries = 5;
         let attempt = 0;
 
         while (attempt < maxRetries) {
-            // Check if field is already visible (e.g. from previous action)
-            if (await this.feedbackTextField.isVisible()) {
-                console.log('Feedback field is visible.');
-                break;
-            }
+            console.log(`Attempting click ${attempt + 1}/${maxRetries}...`);
 
-            console.log(`Feedback textarea not visible. Attempting click ${attempt + 1}/${maxRetries}...`);
-            await this.writeFeedbackBtn.click({ force: true });
+            try {
+                if (await writeBtn.isVisible()) {
+                    await writeBtn.click({ force: true });
+                } else {
+                    console.log('Write button not visible (might be covered), trying force click anyway...');
+                    await writeBtn.click({ force: true });
+                }
+            } catch (e) {
+                console.warn('Error clicking write button:', e.message);
+            }
 
             try {
                 // Wait briefly for the field to appear
                 await this.feedbackTextField.waitFor({ state: 'visible', timeout: 3000 });
                 console.log('Feedback field appeared.');
-                break;
+                await this.feedbackTextField.fill(feedback);
+                return;
             } catch (e) {
                 console.warn('Feedback field did not appear yet.');
             }
@@ -175,12 +190,7 @@ class FormsPage {
             await this.page.waitForTimeout(1000); // Wait before retry
         }
 
-        // Final robust check
-        await this.feedbackTextField.waitFor({ state: 'visible', timeout: 10000 });
-
-        // Fill feedback
-        await this.feedbackTextField.fill(feedback);
-        console.log('Feedback text entered successfully.');
+        throw new Error('Feedback field did not become visible after multiple attempts.');
     }
 
     // Kept for backward compatibility if needed, calling the robust fill
