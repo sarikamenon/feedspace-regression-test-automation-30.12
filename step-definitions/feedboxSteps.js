@@ -76,6 +76,6 @@ Then('the label {string} should be attached to the review', async function (labe
     await this.feedboxPage.verifyLabelAttached(label);
 });
 
-When('the user selects the first unlabeled review', async function () {
-    await this.feedboxPage.clickFirstUnlabeledReviewCheckbox();
+When('the user selects a review without label {string}', async function (label) {
+    await this.feedboxPage.clickReviewWithoutLabel(label);
 });

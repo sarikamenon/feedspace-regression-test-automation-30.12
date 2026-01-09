@@ -48,7 +48,7 @@ Scenario: Unmark favourite reviews
 @label-test
 Scenario: Apply existing label to unlabeled review
   When the user clicks on the select reviews option
-  And the user selects the first unlabeled review
+  And the user selects a review without label "automation"
   And the user clicks on the Label icon
   And the user selects the label "automation"
   Then the label "automation" should be attached to the review
