@@ -43,15 +43,30 @@ Scenario: Unmark favourite reviews
 
 
 # -------------------------------
-# Scenario 3: Apply existing label
+# Scenario 3: Apply and remove label from a review
 # -------------------------------
-@label-test
+@label-apply
 Scenario: Apply existing label to unlabeled review
   When the user clicks on the select reviews option
-  And the user selects a review without label "automation"
+  And the user clicks the checkbox of the first review
   And the user clicks on the Label icon
-  And the user selects the label "automation"
+  And the user clicks on the label "automation" from the label dropdown
   Then the label "automation" should be attached to the review
+  And the user prints "Label is attached to the review"
   And the user closed the label modal
+
+  # -------------------------------
+  # Scenario 4: Remove label from a review
+  # -------------------------------
+  @label-remove
+  Scenario: Remove label from a review
+    When the user refreshes the page
+    When the user clicks on the select reviews option
+    And the user selects a review with label "automation"
+    And the user clicks on the Label icon
+    And the user clicks on the label "automation" from the label dropdown
+    Then the label "automation" should be removed from the review
+    And the user prints "Label is removed from the review"
+    And the user closed the label modal
 
 

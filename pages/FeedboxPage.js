@@ -270,6 +270,48 @@ class FeedboxPage {
             throw new Error("No reviews found.");
         }
     }
+
+    async reloadPage() {
+        console.log('Reloading page to ensure fresh state...');
+        await this.page.reload();
+        await this.page.waitForLoadState('domcontentloaded');
+        // Wait for Feedbox key element again
+        await this.selectReviewsText.first().waitFor({ state: 'visible', timeout: 30000 });
+    }
+
+    async clickReviewWithLabel(labelToFind) {
+        console.log(`Selecting a visible review that HAS label: "${labelToFind}"...`);
+
+        const toggleButtons = this.page.locator('button[data-feed-selection-toggle]').filter({ hasText: '' });
+        const count = await toggleButtons.count();
+        console.log(`Found ${count} toggle buttons.`);
+
+        for (let i = 0; i < count; i++) {
+            const btn = toggleButtons.nth(i);
+            if (!(await btn.isVisible())) continue;
+
+            const card = btn.locator('xpath=./ancestor::div[contains(@class, "feed-card") or contains(@class, "review-card") or contains(@class, "border")]').first();
+
+            // Check if this card HAS the label
+            const labelLocator = card.locator([
+                `.feed-label-chip:has-text("${labelToFind}")`,
+                `.feed-card-tags span:has-text("${labelToFind}")`,
+                `.tags-container span:has-text("${labelToFind}")`,
+                `span.badge:has-text("${labelToFind}")`,
+                `div[class*="tag"]:has-text("${labelToFind}")`,
+                `.review-card span:has-text("${labelToFind}")`
+            ].join(', '));
+
+            if (await labelLocator.count() > 0) {
+                console.log(`Found review at index ${i} WITH label "${labelToFind}". Clicking...`);
+                await btn.click();
+                return;
+            }
+        }
+
+        console.warn(`No review found WITH label "${labelToFind}". Cannot proceed with strict selection.`);
+        throw new Error(`No review found with label "${labelToFind}" to remove.`);
+    }
 }
 
 module.exports = { FeedboxPage };

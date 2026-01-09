@@ -92,6 +92,14 @@ Then('the label {string} should be removed from the review', async function (lab
     await this.feedboxPage.verifyLabelRemoved(label);
 });
 
+When('the user selects a review with label {string}', async function (label) {
+    await this.feedboxPage.clickReviewWithLabel(label);
+});
+
 When('the user prints {string}', async function (msg) {
     console.log(`[USER PRINT]: ${msg}`);
+});
+
+When('the user refreshes the page', async function () {
+    await this.feedboxPage.reloadPage();
 });
