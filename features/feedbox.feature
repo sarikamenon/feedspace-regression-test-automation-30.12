@@ -51,7 +51,7 @@ Scenario: Unmark favourite reviews
     And the user clicks the checkbox of the first review
     And the user clicks on the Label icon
     And the user clicks on the label "automation" from the label dropdown
-    And the user clicks on Apply button
+    And the user closed the label modal
     And the user refreshes the page
     Then the label "automation" should be attached to the review
     And the user prints "Label is attached to the review"
@@ -66,7 +66,7 @@ Scenario: Unmark favourite reviews
     And the user selects a review with label "automation"
     And the user clicks on the Label icon
     And the user clicks on the label "automation" from the label dropdown
-    And the user clicks on Apply button
+    And the user closed the label modal
     And the user refreshes the page
     Then the label "automation" should be removed from the review
     And the user prints "Label is removed from the review"

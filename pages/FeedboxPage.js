@@ -193,6 +193,9 @@ class FeedboxPage {
 
         await labelItem.waitFor({ state: 'visible', timeout: 5000 });
         await labelItem.click();
+
+        console.log('Label clicked. Waiting for auto-save...');
+        await this.page.waitForTimeout(3000); // Wait for backend sync since there is no apply button
     }
 
     async clickCloseLabelModal() {
@@ -201,18 +204,6 @@ class FeedboxPage {
         const closeBtn = this.page.locator('#close-action');
         await closeBtn.waitFor({ state: 'visible', timeout: 5000 });
         await closeBtn.click();
-    }
-
-    async clickApplyButton() {
-        console.log('Clicking Apply button...');
-        // Reuse the generic batch action button locator
-        const applyBtn = this.page.locator('#batch-action-btn');
-        await applyBtn.waitFor({ state: 'visible', timeout: 5000 });
-        await applyBtn.click();
-
-        // Wait for modal to disappear/toast/network idle?
-        // Usually clicking Apply closes the modal.
-        await this.page.waitForTimeout(1000); // Small stability wait
     }
 
     async verifyLabelAttached(labelName) {
