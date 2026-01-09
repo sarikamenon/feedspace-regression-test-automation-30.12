@@ -55,7 +55,7 @@ Feature: Import Reviews
     And I switch back to the original tab
     Then I click on the close button
 
-  # -------------------------------
+   # -------------------------------
 # Forms Flow (conditional Create/New Form)
 # -------------------------------
 @forms

@@ -178,7 +178,7 @@ class FormsPage {
 
             try {
                 // Wait briefly for the field to appear
-                await this.feedbackTextField.waitFor({ state: 'visible', timeout: 3000 });
+                await this.feedbackTextField.waitFor({ state: 'visible', timeout: 5000 });
                 console.log('Feedback field appeared.');
                 await this.feedbackTextField.fill(feedback);
                 return;
