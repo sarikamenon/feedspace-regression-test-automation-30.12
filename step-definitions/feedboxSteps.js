@@ -103,3 +103,7 @@ When('the user prints {string}', async function (msg) {
 When('the user refreshes the page', async function () {
     await this.feedboxPage.reloadPage();
 });
+
+When('the user clicks on Apply button', async function () {
+    await this.feedboxPage.clickApplyButton();
+});

@@ -203,6 +203,18 @@ class FeedboxPage {
         await closeBtn.click();
     }
 
+    async clickApplyButton() {
+        console.log('Clicking Apply button...');
+        // Reuse the generic batch action button locator
+        const applyBtn = this.page.locator('#batch-action-btn');
+        await applyBtn.waitFor({ state: 'visible', timeout: 5000 });
+        await applyBtn.click();
+
+        // Wait for modal to disappear/toast/network idle?
+        // Usually clicking Apply closes the modal.
+        await this.page.waitForTimeout(1000); // Small stability wait
+    }
+
     async verifyLabelAttached(labelName) {
         console.log(`Verifying label "${labelName}" is attached...`);
         // Use a robust list of potential containers/tags matching the selection logic + broader fallbacks
