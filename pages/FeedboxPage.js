@@ -205,15 +205,29 @@ class FeedboxPage {
 
     async verifyLabelAttached(labelName) {
         console.log(`Verifying label "${labelName}" is attached...`);
-        // Check for the label pill on the first review card (or selected reviews)
-        const labelPill = this.page.locator(`.feed-card-tags span:has-text("${labelName}"), .review-card span:has-text("${labelName}")`).first();
+        // Use a robust list of potential containers/tags matching the selection logic + broader fallbacks
+        const labelPill = this.page.locator([
+            `.feed-card-tags span:has-text("${labelName}")`,
+            `.tags-container span:has-text("${labelName}")`,
+            `span.badge:has-text("${labelName}")`,
+            `div[class*="tag"]:has-text("${labelName}")`,
+            `.review-card span:has-text("${labelName}")`
+        ].join(', ')).first();
+
         await expect(labelPill).toBeVisible({ timeout: 10000 });
     }
 
     async verifyLabelRemoved(labelName) {
         console.log(`Verifying label "${labelName}" is removed...`);
         // Check that the label pill is either NOT visible or NOT attached
-        const labelPill = this.page.locator(`.feed-card-tags span:has-text("${labelName}"), .review-card span:has-text("${labelName}")`).first();
+        const labelPill = this.page.locator([
+            `.feed-card-tags span:has-text("${labelName}")`,
+            `.tags-container span:has-text("${labelName}")`,
+            `span.badge:has-text("${labelName}")`,
+            `div[class*="tag"]:has-text("${labelName}")`,
+            `.review-card span:has-text("${labelName}")`
+        ].join(', ')).first();
+
         await expect(labelPill).toBeHidden({ timeout: 10000 });
     }
 
