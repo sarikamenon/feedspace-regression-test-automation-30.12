@@ -79,3 +79,19 @@ Then('the label {string} should be attached to the review', async function (labe
 When('the user selects a review without label {string}', async function (label) {
     await this.feedboxPage.clickReviewWithoutLabel(label);
 });
+
+When('the user clicks the checkbox of the first review', async function () {
+    await this.feedboxPage.clickFirstReviewCheckbox();
+});
+
+When('the user clicks on the label {string} from the label dropdown', async function (label) {
+    await this.feedboxPage.selectLabel(label);
+});
+
+Then('the label {string} should be removed from the review', async function (label) {
+    await this.feedboxPage.verifyLabelRemoved(label);
+});
+
+When('the user prints {string}', async function (msg) {
+    console.log(`[USER PRINT]: ${msg}`);
+});

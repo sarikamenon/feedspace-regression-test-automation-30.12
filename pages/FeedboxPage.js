@@ -210,6 +210,13 @@ class FeedboxPage {
         await expect(labelPill).toBeVisible({ timeout: 10000 });
     }
 
+    async verifyLabelRemoved(labelName) {
+        console.log(`Verifying label "${labelName}" is removed...`);
+        // Check that the label pill is either NOT visible or NOT attached
+        const labelPill = this.page.locator(`.feed-card-tags span:has-text("${labelName}"), .review-card span:has-text("${labelName}")`).first();
+        await expect(labelPill).toBeHidden({ timeout: 10000 });
+    }
+
     async clickReviewWithoutLabel(labelToAvoid) {
         console.log(`Selecting a visible review that does NOT have label: "${labelToAvoid}"...`);
 
