@@ -104,10 +104,7 @@ Then(/^I click on the Write Your Feedback button\s*$/, async function () {
 });
 
 Then(/^I enter the feedback in the submit feedback field\s*$/, async function () {
-    await this.formsPage.feedbackTextField.waitFor({ state: 'visible', timeout: 15000 });
-    await this.formsPage.feedbackTextField.click({ force: true });
-    await this.formsPage.feedbackTextField.fill('Great service and friendly staff!');
-    await this.page.waitForTimeout(1000); // Wait for field to stabilize
+    await this.formsPage.fillFeedback('Great service and friendly staff!');
 });
 
 Then(/^I click on the Submit Feedback button\s*$/, async function () {

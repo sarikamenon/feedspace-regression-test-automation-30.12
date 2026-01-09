@@ -142,39 +142,59 @@ class FormsPage {
         return newPage;
     }
 
-    async submitFeedback(feedback) {
-        console.log(`Submitting feedback: ${feedback}`);
+    async fillFeedback(feedback) {
+        console.log(`Filling feedback: ${feedback}`);
 
-        // Wait for "Write Your Feedback" button
+        // Ensure "Write Your Feedback" button is visible
         await this.writeFeedbackBtn.waitFor({ state: 'visible', timeout: 20000 });
 
-        let isFeedbackFieldVisible = await this.feedbackTextField.isVisible();
+        // Retry loop to click 'Write Your Feedback' and wait for field to be visible
+        const maxRetries = 5;
+        let attempt = 0;
 
-        if (!isFeedbackFieldVisible) {
-            console.log('Clicking Write Your Feedback button...');
+        while (attempt < maxRetries) {
+            // Check if field is already visible (e.g. from previous action)
+            if (await this.feedbackTextField.isVisible()) {
+                console.log('Feedback field is visible.');
+                break;
+            }
+
+            console.log(`Feedback textarea not visible. Attempting click ${attempt + 1}/${maxRetries}...`);
             await this.writeFeedbackBtn.click({ force: true });
 
-            // Wait for the feedback field to appear (modal animation)
             try {
-                await this.feedbackTextField.waitFor({ state: 'visible', timeout: 5000 });
+                // Wait briefly for the field to appear
+                await this.feedbackTextField.waitFor({ state: 'visible', timeout: 3000 });
+                console.log('Feedback field appeared.');
+                break;
             } catch (e) {
-                console.warn('Feedback field not visible after first click. Retrying click...');
-                await this.writeFeedbackBtn.click({ force: true });
-                await this.feedbackTextField.waitFor({ state: 'visible', timeout: 10000 });
+                console.warn('Feedback field did not appear yet.');
             }
+
+            attempt++;
+            await this.page.waitForTimeout(1000); // Wait before retry
         }
 
-        await this.feedbackTextField.fill(feedback);
+        // Final robust check
+        await this.feedbackTextField.waitFor({ state: 'visible', timeout: 10000 });
 
-        await this.submitFeedbackBtn.waitFor({ state: 'visible', timeout: 5000 });
+        // Fill feedback
+        await this.feedbackTextField.fill(feedback);
+        console.log('Feedback text entered successfully.');
+    }
+
+    // Kept for backward compatibility if needed, calling the robust fill
+    async submitFeedback(feedback) {
+        await this.fillFeedback(feedback);
+
+        await this.submitFeedbackBtn.waitFor({ state: 'visible', timeout: 10000 });
         await this.submitFeedbackBtn.click({ force: true });
 
         try {
-            // Optional final submit button
             await this.finalSubmitBtn.waitFor({ state: 'visible', timeout: 5000 });
             await this.finalSubmitBtn.click({ force: true });
         } catch (e) {
-            console.log('Final submit button not required or not found.');
+            console.log('Final submit button not required.');
         }
     }
 
