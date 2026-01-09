@@ -15,7 +15,7 @@ try {
 
 const options = {
     theme: 'bootstrap',
-    jsonFile: 'reports/cucumber-report.json',
+    jsonDir: 'reports',
     output: 'reports/cucumber-report.html',
     reportSuiteAsScenarios: true,
     scenarioTimestamp: true,

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "cucumber-js",
-    "test:import": "cucumber-js features/import_reviews.feature --format json:reports/cucumber-report.json",
+    "test:import": "cucumber-js features/import_reviews.feature --format json:reports/import-report.json",
+    "test:feedbox": "cucumber-js features/feedbox.feature --format json:reports/feedbox-report.json",
     "test:report": "node report.js",
     "report": "node report.js"
   },

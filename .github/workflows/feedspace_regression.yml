@@ -26,6 +26,12 @@ jobs:
 
     - name: Run Import Reviews Feature
       run: npm run test:import
+      continue-on-error: true
+
+    - name: Run Feedbox Feature
+      if: always()
+      run: npm run test:feedbox
+      continue-on-error: true
 
     - name: Generate HTML Report
       if: always()

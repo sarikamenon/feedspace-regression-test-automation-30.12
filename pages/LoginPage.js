@@ -66,10 +66,15 @@ class LoginPage {
 
     // Generic click by button text
     async clickButtonByText(text) {
-        const btnSelector = this.genericBtn(text);
-        console.log(`Clicking button with text: ${text}`);
-        await this.page.locator(btnSelector).first().waitFor({ state: 'visible', timeout: 30000 });
-        await this.page.locator(btnSelector).first().click();
+        console.log(`Clicking button/element with text: ${text}`);
+        // Try precise button first, then link, then generic text
+        const btn = this.page.locator(`button:has-text("${text}")`)
+            .or(this.page.locator(`a:has-text("${text}")`))
+            .or(this.page.getByRole('button', { name: text }))
+            .or(this.page.getByText(text));
+
+        await btn.first().waitFor({ state: 'visible', timeout: 30000 });
+        await btn.first().click();
     }
 
     async getCurrentUrl() {

@@ -170,7 +170,7 @@ Scenario: Generate creative space Image for Reviews
       Then the Creative Space page should be displayed
 
     When the user clicks the Create Image button
-Then the Create Image modal should be displayed
+    Then the Create Image modal should be displayed
 
     And the user selects a review from the list
     And the user clicks on an image template from the list
@@ -180,3 +180,5 @@ Then the Create Image modal should be displayed
 
     When the user clicks the Close button
     Then the Create Image modal should be closed
+
+
