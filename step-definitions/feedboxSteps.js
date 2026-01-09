@@ -68,8 +68,8 @@ When('the user selects the label {string}', async function (label) {
     await this.feedboxPage.selectLabel(label);
 });
 
-When('the user applies the label', async function () {
-    await this.feedboxPage.clickApplyLabel();
+When('the user closed the label modal', async function () {
+    await this.feedboxPage.clickCloseLabelModal();
 });
 
 Then('the label {string} should be attached to the review', async function (label) {

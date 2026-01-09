@@ -51,6 +51,7 @@ Scenario: Apply existing label to unlabeled review
   And the user selects the first unlabeled review
   And the user clicks on the Label icon
   And the user selects the label "automation"
-  And the user applies the label
   Then the label "automation" should be attached to the review
+  And the user closed the label modal
+
 

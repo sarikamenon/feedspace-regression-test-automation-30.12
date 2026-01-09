@@ -131,41 +131,46 @@ class FeedboxPage {
 
     async clickLabelIcon() {
         console.log('Clicking Label icon...');
-        // Try multiple probable locators for the Label/Tag icon in the batch panel
-        const icon = this.page.locator('#batch-operations-panel button:has-text("Label"), #batch-operations-panel button[title="Add Label"], #batch-operations-panel svg.lucide-tag, button.add-tag-btn').first();
-        await icon.waitFor({ state: 'visible', timeout: 10000 });
-        await icon.click();
+        // User provided specific locator: 
+        // #batch-operations-panel > div > div > div.flex.flex-wrap.items-center.gap-2.md\:gap-3 > div > div > button > span > span
+        // We will try to use a slightly more robust version of it, targeting the button in the batch panel
+        const icon = this.page.locator('#batch-operations-panel button').filter({ hasText: 'Label' }).first().or(
+            this.page.locator('#batch-operations-panel svg.lucide-tag').locator('..')
+        ).or(
+            this.page.locator('button:has-text("Label")')
+        );
+
+        await icon.first().waitFor({ state: 'visible', timeout: 10000 });
+        await icon.first().click();
     }
 
     async selectLabel(labelName) {
         console.log(`Selecting label: ${labelName}`);
-        // Locator for the search/input field in the label modal
-        const input = this.page.locator('input[placeholder*="Search"], input[placeholder*="Tag"], input[placeholder*="Label"]');
-        await input.waitFor({ state: 'visible', timeout: 10000 });
-        await input.fill(labelName);
-        await this.page.waitForTimeout(1000); // Debounce wait
 
-        // Locator for existing label checkbox (assuming list is filtered)
-        const existingOption = this.page.locator(`div:has-text("${labelName}")`).first();
-
-        if (await existingOption.count() > 0) {
-            console.log('Label found. Selecting...');
-            const checkbox = existingOption.locator('input[type="checkbox"]');
-            if (await checkbox.count() > 0 && await checkbox.isChecked()) {
-                console.log('Label already checked via filter.');
-            } else {
-                await existingOption.click();
-            }
-        } else {
-            console.warn(`Label "${labelName}" not found in list. Unable to select.`);
+        // 1. Search (Optional but good practice if list is long)
+        // Trying generic search input just in case
+        const input = this.page.locator('.label-popover-container input[placeholder*="Search"]');
+        if (await input.count() > 0 && await input.isVisible()) {
+            await input.fill(labelName);
+            await this.page.waitForTimeout(500);
         }
+
+        // 2. Select specific label using user provided strategy
+        // label dropdown await page.locator('#batch-operations-panel .label-popover-container').getByText('automation', { exact: true }).click();
+
+        const labelItem = this.page.locator('#batch-operations-panel .label-popover-container')
+            .getByText(labelName, { exact: true });
+
+        await labelItem.waitFor({ state: 'visible', timeout: 5000 });
+        await labelItem.click();
     }
 
-    async clickApplyLabel() {
-        console.log('Clicking Apply Label button...');
-        const applyBtn = this.page.locator('button:has-text("Apply")');
-        await applyBtn.waitFor({ state: 'visible' });
-        await applyBtn.click();
+    async clickCloseLabelModal() {
+        console.log('Clicking Close Label Modal button...');
+        // User provided: #close-action > svg
+        const closeBtn = this.page.locator('#close-action');
+        await closeBtn.waitFor({ state: 'visible', timeout: 5000 });
+        await closeBtn.click();
     }
 
     async verifyLabelAttached(labelName) {
