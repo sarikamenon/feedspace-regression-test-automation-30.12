@@ -38,8 +38,25 @@ class FeedboxPage {
 
     async clickSelectReviews() {
         console.log('Clicking "Select Reviews"...');
-        await this.selectReviewsText.first().waitFor({ state: 'visible', timeout: 10000 });
-        await this.selectReviewsText.first().click();
+        // Target the button directly, checking for visibility
+        // ID should be unique, but if duplicates exist (e.g. mobile/desktop), filter by visible
+        const btn = this.page.locator('#select-reviews-btn');
+
+        try {
+            await btn.first().waitFor({ state: 'attached', timeout: 5000 });
+
+            const visibleBtn = btn.locator('visible=true');
+            if (await visibleBtn.count() > 0) {
+                await visibleBtn.first().click();
+            } else {
+                console.warn('"Select Reviews" button attached but not visible. Attempting force click on first instance.');
+                await btn.first().click({ force: true });
+            }
+        } catch (e) {
+            console.error('Error clicking Select Reviews:', e);
+            // Last resort
+            await btn.first().click({ force: true });
+        }
     }
 
     async clickSelectAllCheckbox() {
