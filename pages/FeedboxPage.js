@@ -159,19 +159,20 @@ class FeedboxPage {
     async selectLabel(labelName) {
         console.log(`Selecting label: ${labelName}`);
 
+        // Scope to the batch operations panel to avoid strict mode violations from other cards
+        const container = this.page.locator('#batch-operations-panel .label-popover-container');
+
         // 1. Search (Optional but good practice if list is long)
-        // Trying generic search input just in case
-        const input = this.page.locator('.label-popover-container input[placeholder*="Search"]');
-        if (await input.count() > 0 && await input.isVisible()) {
-            await input.fill(labelName);
+        const input = container.locator('input[placeholder*="Search"]');
+
+        // Check availability safely using first() just in case, though scoping should help
+        if (await input.count() > 0 && await input.first().isVisible()) {
+            await input.first().fill(labelName);
             await this.page.waitForTimeout(500);
         }
 
-        // 2. Select specific label using user provided strategy
-        // label dropdown await page.locator('#batch-operations-panel .label-popover-container').getByText('automation', { exact: true }).click();
-
-        const labelItem = this.page.locator('#batch-operations-panel .label-popover-container')
-            .getByText(labelName, { exact: true });
+        // 2. Select specific label using user provided strategy (now using the variable container)
+        const labelItem = container.getByText(labelName, { exact: true });
 
         await labelItem.waitFor({ state: 'visible', timeout: 5000 });
         await labelItem.click();
